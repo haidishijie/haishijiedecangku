@@ -1,0 +1,130 @@
+<!-- 个人中心 -->
+<view class="container {{themeClass}}">
+  <!-- 用户信息 -->
+  <view class="profile-header">
+    <!-- 头像 - 使用微信官方按钮 -->
+    <button class="avatar-btn" open-type="chooseAvatar" bindchooseavatar="onChooseAvatar">
+      <image wx:if="{{avatarUrl}}" class="avatar-img" src="{{avatarUrl}}" mode="aspectFill"></image>
+      <view wx:else class="avatar-placeholder">
+        <text class="avatar-icon">📷</text>
+        <text class="avatar-hint">设置头像</text>
+      </view>
+    </button>
+
+    <!-- 昵称 - 使用 type="nickname" 自动获取微信昵称 -->
+    <view class="nickname-wrap">
+      <input
+        class="nickname-input"
+        type="nickname"
+        placeholder="点击获取微信昵称"
+        value="{{userName}}"
+        bindinput="onNicknameInput"
+        bindblur="onNicknameBlur"
+      />
+    </view>
+
+    <view class="user-id" wx:if="{{userName}}">ID: {{userId}}</view>
+  </view>
+
+  <!-- 战绩统计 -->
+  <view class="stats-section">
+    <view class="section-title">📊 我的战绩</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <view class="stat-value">{{stats.totalGames}}</view>
+        <view class="stat-label">总牌局</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.wins}}</view>
+        <view class="stat-label">赢的局</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value">{{stats.maxWinStreak}}</view>
+        <view class="stat-label">最高连胜</view>
+      </view>
+      <view class="stat-item">
+        <view class="stat-value {{stats.totalScore > 0 ? 'positive' : stats.totalScore < 0 ? 'negative' : ''}}">{{stats.totalScore > 0 ? '+' : ''}}{{stats.totalScore}}</view>
+        <view class="stat-label">总积分</view>
+      </view>
+    </view>
+    <!-- 胜率 -->
+    <view class="win-rate" wx:if="{{stats.totalGames > 0}}">
+      <view class="rate-bar">
+        <view class="rate-fill" style="width: {{winRate}}%"></view>
+      </view>
+      <view class="rate-text">胜率 {{winRate}}%</view>
+    </view>
+  </view>
+
+  <!-- 常见牌友排行 -->
+  <view class="ranking-section">
+    <view class="section-title">👥 常见牌友</view>
+    <view wx:if="{{topOpponents.length === 0}}" class="empty-hint">
+      一起打过牌的牌友会出现在这里
+    </view>
+    <view wx:for="{{topOpponents}}" wx:key="playerId" class="opponent-item">
+      <view class="opponent-rank">{{index + 1}}</view>
+      <view class="opponent-avatar" style="background: {{opponentColors[index % 4]}}15; color: {{opponentColors[index % 4]}}">
+        {{item.name[0]}}
+      </view>
+      <view class="opponent-info">
+        <view class="opponent-name">{{item.name}}</view>
+        <view class="opponent-stats">一起打了 {{item.games}} 局</view>
+      </view>
+      <view class="opponent-score {{item.totalDiff > 0 ? 'positive' : item.totalDiff < 0 ? 'negative' : ''}}">
+        {{item.totalDiff > 0 ? '+' : ''}}{{item.totalDiff}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 设置 -->
+  <view class="settings-section">
+    <view class="section-title">⚙️ 设置</view>
+    <view class="setting-item" bindtap="onGoTheme">
+      <view class="setting-label">🎨 主题皮肤</view>
+      <view class="setting-value">{{currentThemeName}}</view>
+      <view class="setting-arrow">›</view>
+    </view>
+    <view class="setting-item" bindtap="onGoHistory">
+      <view class="setting-label">📊 历史记录</view>
+      <view class="setting-arrow">›</view>
+    </view>
+    <view class="setting-item" bindtap="onLogout">
+      <view class="setting-label">退出登录</view>
+      <view class="setting-arrow">›</view>
+    </view>
+  </view>
+
+  <!-- 主题选择弹窗 -->
+  <view class="theme-modal {{showThemeModal ? 'show' : ''}}" catchtap="onCloseThemeModal">
+    <view class="theme-modal-content" catchtap="">
+      <view class="theme-modal-title">选择主题</view>
+      <view class="theme-list">
+        <view
+          wx:for="{{themeList}}"
+          wx:key="key"
+          class="theme-item {{currentThemeKey === item.key ? 'active' : ''}}"
+          bindtap="onSelectTheme"
+          data-key="{{item.key}}"
+        >
+          <view class="theme-icon">{{item.icon}}</view>
+          <view class="theme-info">
+            <view class="theme-name">{{item.name}}</view>
+            <view class="theme-preview">
+              <view class="preview-dot" style="background: {{item.colors.primary}}"></view>
+              <view class="preview-dot" style="background: {{item.colors.success}}"></view>
+              <view class="preview-dot" style="background: {{item.colors.error}}"></view>
+            </view>
+          </view>
+          <view class="theme-check" wx:if="{{currentThemeKey === item.key}}">✓</view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 关于 -->
+  <view class="about-section">
+    <view class="about-text">胡乐 v1.0.0</view>
+    <view class="about-desc">打牌记分 · 轻松愉快</view>
+  </view>
+</view>

@@ -1,0 +1,43 @@
+/* 玩家头像样式 */
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+.avatar-md {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+.avatar-lg {
+  width: 60px;
+  height: 60px;
+  border-radius: 16px;
+}
+
+.avatar-text {
+  font-weight: 700;
+  color: white;
+}
+
+.avatar-sm .avatar-text {
+  font-size: 13px;
+}
+
+.avatar-md .avatar-text {
+  font-size: 16px;
+}
+
+.avatar-lg .avatar-text {
+  font-size: 24px;
+}

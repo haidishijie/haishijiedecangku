@@ -1,0 +1,5 @@
+<!-- 统计数字卡片 -->
+<view class="stat-card">
+  <text class="stat-value" style="color: {{color || '#007AFF'}}">{{value}}</text>
+  <text class="stat-label">{{label}}</text>
+</view>

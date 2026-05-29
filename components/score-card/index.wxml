@@ -1,0 +1,27 @@
+<!-- 积分卡片组件 -->
+<view class="score-card {{isLeading ? 'leading' : ''}}" style="{{isLeading ? '' : 'background: ' + cardBg}}">
+  <!-- 排名 -->
+  <view class="rank" wx:if="{{rank}}">
+    <text class="rank-num">{{rank}}</text>
+  </view>
+
+  <!-- 头像 -->
+  <view class="avatar" style="background: {{color}}">
+    <text class="avatar-text">{{playerInitial}}</text>
+  </view>
+
+  <!-- 信息 -->
+  <view class="info">
+    <view class="name">{{playerName}}</view>
+    <view class="round-score {{roundScore > 0 ? 'positive' : roundScore < 0 ? 'negative' : ''}}" wx:if="{{roundScore !== 0}}">
+      本轮 {{roundScore > 0 ? '+' : ''}}{{roundScore}}
+    </view>
+  </view>
+
+  <!-- 总分 -->
+  <view class="total">
+    <text class="total-score {{totalScore > 0 ? 'positive' : totalScore < 0 ? 'negative' : ''}}">
+      {{totalScore > 0 ? '+' : ''}}{{totalScore}}
+    </text>
+  </view>
+</view>

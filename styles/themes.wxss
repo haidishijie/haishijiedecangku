@@ -1,0 +1,37 @@
+/* 主题样式 - 使用容器类名 */
+
+/* iOS 23 主题 (默认) */
+.theme-ios23 {
+  --color-primary: #007AFF;
+  --color-success: #34C759;
+  --color-error: #FF3B30;
+  --color-background: #F2F2F7;
+  --color-card-bg: rgba(255,255,255,0.72);
+}
+
+/* 薄荷清新主题 */
+.theme-mint {
+  --color-primary: #00B894;
+  --color-success: #00CEC9;
+  --color-error: #FF6B6B;
+  --color-background: #F0FAF8;
+  --color-card-bg: rgba(255,255,255,0.85);
+}
+
+/* 梦幻紫蓝主题 */
+.theme-purple {
+  --color-primary: #6C5CE7;
+  --color-success: #A29BFE;
+  --color-error: #FF6B6B;
+  --color-background: #F8F7FF;
+  --color-card-bg: rgba(255,255,255,0.85);
+}
+
+/* 珊瑚甜美主题 */
+.theme-coral {
+  --color-primary: #FF6B6B;
+  --color-success: #FF8E8E;
+  --color-error: #E17055;
+  --color-background: #FFF5F5;
+  --color-card-bg: rgba(255,255,255,0.85);
+}

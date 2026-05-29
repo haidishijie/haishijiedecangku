@@ -1,0 +1,273 @@
+/* 排行榜样式 */
+
+.container {
+  min-height: 100vh;
+  padding: 0 20px 40px;
+  background: var(--color-background);
+}
+
+.page-header {
+  padding: 24px 0 16px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: #888780;
+}
+
+/* 时间筛选 */
+.filter-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  justify-content: center;
+}
+
+.filter-chip {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #5F5E5A;
+  background: #FFFFFF;
+  border: 0.5px solid #D3D1C7;
+}
+
+.filter-chip.active {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80);
+  color: #FFFFFF;
+  border-color: transparent;
+}
+
+.filter-chip:active {
+  transform: scale(0.95);
+}
+
+.period-label {
+  text-align: center;
+  font-size: 12px;
+  color: #888780;
+  margin-bottom: 20px;
+}
+
+/* 前三名 */
+.top3-section {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  padding: 0 10px;
+}
+
+.top-item {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px 10px;
+  text-align: center;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.top-item.rank-1 {
+  border-color: #F4C0D1;
+  background: linear-gradient(180deg, #FFF0F5, #FFFFFF);
+  padding-bottom: 20px;
+}
+
+.top-item.rank-2 {
+  padding-bottom: 16px;
+}
+
+.top-item.rank-3 {
+  padding-bottom: 16px;
+}
+
+.top-medal {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.rank-1 .top-medal {
+  font-size: 36px;
+}
+
+.top-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 auto 8px;
+}
+
+.rank-1 .top-avatar {
+  width: 56px;
+  height: 56px;
+  font-size: 22px;
+}
+
+.top-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.top-score {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.rank-1 .top-score {
+  font-size: 22px;
+}
+
+.top-score.positive {
+  color: #E24B4A;
+}
+
+.top-score.negative {
+  color: #185FA5;
+}
+
+.top-stats {
+  font-size: 11px;
+  color: #888780;
+}
+
+/* 完整列表 */
+.list-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #5F5E5A;
+  margin-bottom: 12px;
+}
+
+.rank-item {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 8px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.rank-num {
+  width: 28px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #888780;
+  text-align: center;
+  margin-right: 10px;
+}
+
+.rank-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.rank-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rank-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 2px;
+}
+
+.rank-stats {
+  font-size: 12px;
+  color: #888780;
+}
+
+.rank-score {
+  font-size: 18px;
+  font-weight: 700;
+  margin-left: 10px;
+}
+
+.rank-score.positive {
+  color: #E24B4A;
+}
+
+.rank-score.negative {
+  color: #185FA5;
+}
+
+/* 统计摘要 */
+.summary-section {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.summary-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  border: 0.5px solid #F4C0D1;
+}
+
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #E24B4A;
+  margin-bottom: 2px;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: #888780;
+}
+
+/* 空状态 */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: #5F5E5A;
+  margin-bottom: 4px;
+}
+
+.empty-hint {
+  font-size: 13px;
+  color: #888780;
+}

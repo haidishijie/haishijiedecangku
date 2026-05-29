@@ -1,0 +1,4 @@
+<!-- 玩家头像组件 -->
+<view class="avatar avatar-{{size}}" style="background: {{color}}">
+  <text class="avatar-text">{{initial}}</text>
+</view>

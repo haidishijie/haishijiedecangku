@@ -1,0 +1,67 @@
+<!-- 历史记录 -->
+<view class="container">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">📊 历史记录</view>
+    <view class="page-desc">所有牌局都在这里</view>
+  </view>
+
+  <!-- 汇总统计 -->
+  <view class="summary-section">
+    <view class="summary-card">
+      <view class="summary-value">{{totalGames}}</view>
+      <view class="summary-label">总局数</view>
+    </view>
+    <view class="summary-card">
+      <view class="summary-value">{{totalRounds}}</view>
+      <view class="summary-label">总轮数</view>
+    </view>
+    <view class="summary-card">
+      <view class="summary-value {{totalScore > 0 ? 'positive' : totalScore < 0 ? 'negative' : ''}}">{{totalScore > 0 ? '+' : ''}}{{totalScore}}</view>
+      <view class="summary-label">总积分</view>
+    </view>
+  </view>
+
+  <!-- 筛选 -->
+  <view class="filter-section">
+    <view class="filter-chip {{filter === 'all' ? 'active' : ''}}" bindtap="onFilter" data-type="all">全部</view>
+    <view class="filter-chip {{filter === 'win' ? 'active' : ''}}" bindtap="onFilter" data-type="win">我赢的</view>
+    <view class="filter-chip {{filter === 'lose' ? 'active' : ''}}" bindtap="onFilter" data-type="lose">我输的</view>
+  </view>
+
+  <!-- 牌局列表 -->
+  <view class="list-section">
+    <view wx:if="{{filteredGames.length === 0}}" class="empty-state">
+      <view class="empty-icon">🎴</view>
+      <view class="empty-text">没有找到牌局</view>
+      <view class="empty-hint">去开一局吧</view>
+    </view>
+
+    <view wx:for="{{filteredGames}}" wx:key="id" class="game-card" bindtap="onGameDetail" data-id="{{item.id}}">
+      <!-- 卡片头部 -->
+      <view class="card-header">
+        <view class="card-left">
+          <view class="card-type">{{item.playerCount}}人局</view>
+          <view class="card-date">{{item.date}} {{item.time}}</view>
+        </view>
+        <view class="card-score {{item.myScore > 0 ? 'positive' : item.myScore < 0 ? 'negative' : ''}}">
+          {{item.myScore > 0 ? '+' : ''}}{{item.myScore}}
+        </view>
+      </view>
+
+      <!-- 玩家分数 -->
+      <view class="card-players">
+        <view wx:for="{{item.rankings}}" wx:for-item="player" wx:key="playerId" class="card-player">
+          <text class="cp-name">{{player.playerName}}</text>
+          <text class="cp-score {{player.total > 0 ? 'positive' : player.total < 0 ? 'negative' : ''}}">{{player.total > 0 ? '+' : ''}}{{player.total}}</text>
+        </view>
+      </view>
+
+      <!-- 底部信息 -->
+      <view class="card-footer">
+        <text class="cf-rounds">打了 {{item.roundCount}} 轮</text>
+        <text class="cf-winner">🏆 {{item.winner}}</text>
+      </view>
+    </view>
+  </view>
+</view>

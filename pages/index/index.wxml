@@ -1,0 +1,49 @@
+<!-- 开局页 -->
+<view class="container {{themeClass}}">
+  <!-- 头部 Logo -->
+  <view class="header">
+    <view class="logo">🀄</view>
+    <view class="app-name">胡乐</view>
+    <view class="app-desc">打牌记分 · 轻松愉快</view>
+  </view>
+
+  <!-- 快速开局按钮 -->
+  <view class="action-section">
+    <button class="btn-start" bindtap="onStartGame">
+      <text class="btn-icon">🀄</text>
+      <text class="btn-text">快速开局</text>
+    </button>
+  </view>
+
+  <!-- 房间功能 -->
+  <view class="room-section">
+    <button class="btn-create-room" bindtap="onCreateRoom">
+      <text>🏠 创建房间</text>
+    </button>
+    <button class="btn-join-room" bindtap="onJoinRoom">
+      <text>🚪 加入房间</text>
+    </button>
+  </view>
+
+  <!-- 最近战绩 -->
+  <view class="recent-section">
+    <view class="section-title">最近战绩</view>
+
+    <view wx:if="{{recentGames.length === 0}}" class="empty-state">
+      <view class="empty-icon">🎴</view>
+      <view class="empty-text">还没有牌局记录</view>
+      <view class="empty-hint">点击上方「快速开局」开始吧</view>
+    </view>
+
+    <view wx:for="{{recentGames}}" wx:key="id" class="game-item" bindtap="onGameDetail" data-id="{{item.id}}">
+      <view class="game-info">
+        <view class="game-title">{{item.playerCount}}人局 · {{item.roundCount}}轮</view>
+        <view class="game-players">{{item.playerNames}}</view>
+      </view>
+      <view class="game-score {{item.myScore > 0 ? 'score-positive' : item.myScore < 0 ? 'score-negative' : ''}}">
+        {{item.myScore > 0 ? '+' : ''}}{{item.myScore}}
+      </view>
+      <view class="game-date">{{item.date}}</view>
+    </view>
+  </view>
+</view>

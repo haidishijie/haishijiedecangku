@@ -1,0 +1,276 @@
+/* 首页样式 */
+
+.container {
+  min-height: 100vh;
+  padding: 0 20px 120px;
+  background: var(--color-background);
+}
+
+/* 头部 */
+.header {
+  text-align: center;
+  padding: 40px 0 24px;
+}
+
+.logo {
+  font-size: 48px;
+  margin-bottom: 8px;
+}
+
+.app-name {
+  font-size: 24px;
+  font-weight: 600;
+  color: #E24B4A;
+  margin-bottom: 4px;
+}
+
+.app-desc {
+  font-size: 12px;
+  color: #888780;
+}
+
+/* 开局按钮 */
+.action-section {
+  margin-bottom: 24px;
+}
+
+.btn-start {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 6px 20px rgba(255, 107, 157, 0.35);
+  letter-spacing: 2px;
+}
+
+.btn-start::after {
+  display: none;
+}
+
+.btn-start:active {
+  transform: scale(0.97);
+  opacity: 0.95;
+}
+
+.btn-icon {
+  font-size: 22px;
+}
+
+/* 房间功能 */
+.room-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.btn-create-room,
+.btn-join-room {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0 !important;
+  border-radius: 14px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+.btn-create-room {
+  background: #FFFFFF !important;
+  color: #E24B4A !important;
+  border: 1.5px solid #F4C0D1 !important;
+}
+
+.btn-create-room::after {
+  display: none;
+}
+
+.btn-join-room {
+  background: #FFFFFF !important;
+  color: #185FA5 !important;
+  border: 1.5px solid #B5D4F4 !important;
+}
+
+.btn-join-room::after {
+  display: none;
+}
+
+.btn-create-room:active,
+.btn-join-room:active {
+  transform: scale(0.97);
+  opacity: 0.9;
+}
+
+/* 统计卡片 */
+.stats-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 0.5px solid #F4C0D1;
+}
+
+.stat-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 22px;
+  font-weight: 600;
+  color: #E24B4A;
+  margin-bottom: 2px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #888780;
+}
+
+/* 功能入口 */
+.nav-section {
+  margin-bottom: 28px;
+}
+
+.nav-card {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 8px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.nav-card:active {
+  background: #FFF0F5;
+}
+
+.nav-icon {
+  font-size: 28px;
+  margin-right: 14px;
+}
+
+.nav-info {
+  flex: 1;
+}
+
+.nav-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 2px;
+}
+
+.nav-desc {
+  font-size: 12px;
+  color: #888780;
+}
+
+.nav-arrow {
+  font-size: 20px;
+  color: #D3D1C7;
+  font-weight: 300;
+}
+
+/* 最近战绩 */
+.recent-section {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin-bottom: 12px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.empty-text {
+  font-size: 15px;
+  color: #5F5E5A;
+  margin-bottom: 4px;
+}
+
+.empty-hint {
+  font-size: 12px;
+  color: #888780;
+}
+
+.game-item {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.game-item:active {
+  background: #F1EFE8;
+}
+
+.game-info {
+  flex: 1;
+}
+
+.game-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: #2C2C2A;
+  margin-bottom: 2px;
+}
+
+.game-players {
+  font-size: 12px;
+  color: #888780;
+}
+
+.game-score {
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.game-score.score-positive {
+  color: #E24B4A;
+}
+
+.game-score.score-negative {
+  color: #3B6D11;
+}
+
+.game-date {
+  font-size: 11px;
+  color: #888780;
+  min-width: 50px;
+  text-align: right;
+}

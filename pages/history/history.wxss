@@ -1,0 +1,212 @@
+/* 历史记录样式 */
+
+.container {
+  min-height: 100vh;
+  padding: 0 20px 40px;
+  background: linear-gradient(180deg, #FFF0F5 0%, #FFFFFF 25%);
+}
+
+.page-header {
+  padding: 24px 0 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: #888780;
+}
+
+/* 汇总统计 */
+.summary-section {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 0.5px solid #F4C0D1;
+}
+
+.summary-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #E24B4A;
+  margin-bottom: 2px;
+}
+
+.summary-value.positive {
+  color: #E24B4A;
+}
+
+.summary-value.negative {
+  color: #185FA5;
+}
+
+.summary-label {
+  font-size: 11px;
+  color: #888780;
+}
+
+/* 筛选 */
+.filter-section {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.filter-chip {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #5F5E5A;
+  background: #FFFFFF;
+  border: 0.5px solid #D3D1C7;
+}
+
+.filter-chip.active {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80);
+  color: #FFFFFF;
+  border-color: transparent;
+}
+
+.filter-chip:active {
+  transform: scale(0.95);
+}
+
+/* 牌局列表 */
+.list-section {
+  margin-bottom: 20px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.empty-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.empty-text {
+  font-size: 15px;
+  color: #5F5E5A;
+  margin-bottom: 4px;
+}
+
+.empty-hint {
+  font-size: 12px;
+  color: #888780;
+}
+
+.game-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.game-card:active {
+  background: #FFF0F5;
+}
+
+/* 卡片头部 */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.card-type {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 2px;
+}
+
+.card-date {
+  font-size: 12px;
+  color: #888780;
+}
+
+.card-score {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.card-score.positive {
+  color: #E24B4A;
+}
+
+.card-score.negative {
+  color: #185FA5;
+}
+
+/* 玩家分数 */
+.card-players {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.card-player {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  background: #F1EFE8;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+.cp-name {
+  color: #5F5E5A;
+  font-weight: 500;
+}
+
+.cp-score.positive {
+  color: #E24B4A;
+  font-weight: 600;
+}
+
+.cp-score.negative {
+  color: #185FA5;
+  font-weight: 600;
+}
+
+/* 底部信息 */
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 10px;
+  border-top: 0.5px solid rgba(211, 209, 199, 0.3);
+}
+
+.cf-rounds {
+  font-size: 12px;
+  color: #888780;
+}
+
+.cf-winner {
+  font-size: 12px;
+  color: #E24B4A;
+  font-weight: 500;
+}

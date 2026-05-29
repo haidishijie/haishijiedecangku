@@ -1,0 +1,67 @@
+<!-- 结算页 -->
+<view class="container">
+  <!-- 胜利横幅 -->
+  <view class="victory-banner">
+    <view class="victory-emoji">🏆</view>
+    <view class="victory-title">牌局结束</view>
+    <view class="victory-desc">打了 {{roundCount}} 轮 · {{playerCount}} 人局</view>
+  </view>
+
+  <!-- 排名 -->
+  <view class="ranking-section">
+    <view class="section-title">最终排名</view>
+
+    <view wx:for="{{rankings}}" wx:key="playerId" class="rank-item rank-{{index + 1}}">
+      <view class="rank-badge">
+        <text wx:if="{{index === 0}}">🥇</text>
+        <text wx:elif="{{index === 1}}">🥈</text>
+        <text wx:elif="{{index === 2}}">🥉</text>
+        <text wx:else>{{index + 1}}</text>
+      </view>
+      <view class="rank-avatar" style="background: {{playerColors[item.originalIndex]}}15; color: {{playerColors[item.originalIndex]}}">
+        {{item.playerName[0]}}
+      </view>
+      <view class="rank-info">
+        <view class="rank-name">{{item.playerName}}</view>
+        <view class="rank-rounds">
+          赢 {{item.winRounds}} 轮 · 输 {{item.loseRounds}} 轮
+        </view>
+      </view>
+      <view class="rank-score {{item.total > 0 ? 'positive' : item.total < 0 ? 'negative' : ''}}">
+        {{item.total > 0 ? '+' : ''}}{{item.total}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 逐轮详情 -->
+  <view class="rounds-section">
+    <view class="section-title">逐轮详情</view>
+
+    <view wx:for="{{roundDetails}}" wx:key="roundNumber" class="round-card">
+      <view class="round-header">
+        <text class="round-num">第 {{item.roundNumber}} 轮</text>
+      </view>
+      <view class="round-scores">
+        <view wx:for="{{item.scores}}" wx:for-item="score" wx:key="playerId" class="round-score-item">
+          <view class="rsi-name" style="color: {{playerColors[score.originalIndex]}}">{{score.playerName}}</view>
+          <view class="rsi-score {{score.score > 0 ? 'positive' : 'negative'}}">
+            {{score.score > 0 ? '+' : ''}}{{score.score}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部操作 -->
+  <view class="bottom-actions safe-bottom">
+    <button class="btn-share" bindtap="onShare">
+      📤 分享战绩
+    </button>
+    <button class="btn-home" bindtap="onGoHome">
+      回到首页
+    </button>
+  </view>
+</view>
+
+<!-- 隐藏的 canvas 用于生成分享图 -->
+<canvas type="2d" id="shareCanvas" class="share-canvas"></canvas>

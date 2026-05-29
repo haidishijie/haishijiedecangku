@@ -1,0 +1,22 @@
+<!-- 自定义底部导航栏 -->
+<view class="tab-bar">
+  <!-- 排行榜 -->
+  <view class="tab-item {{selected === 0 ? 'active' : ''}}" bindtap="switchTab" data-index="0" data-url="/pages/friends/friends">
+    <image class="tab-icon" src="/images/icons/icon-rank.svg" mode="aspectFit"></image>
+    <view class="tab-text">排行榜</view>
+  </view>
+
+  <!-- 开局（特殊按钮） -->
+  <view class="tab-item-center" bindtap="switchTab" data-index="1" data-url="/pages/index/index">
+    <view class="center-btn">
+      <image class="center-icon" src="/images/icons/icon-mahjong.svg" mode="aspectFit"></image>
+    </view>
+    <view class="tab-text center-text">开局</view>
+  </view>
+
+  <!-- 我的 -->
+  <view class="tab-item {{selected === 2 ? 'active' : ''}}" bindtap="switchTab" data-index="2" data-url="/pages/profile/profile">
+    <image class="tab-icon" src="/images/icons/icon-players.svg" mode="aspectFit"></image>
+    <view class="tab-text">我的</view>
+  </view>
+</view>

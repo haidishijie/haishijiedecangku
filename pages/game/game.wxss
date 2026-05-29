@@ -1,0 +1,467 @@
+/* 记分页样式 */
+
+.container {
+  min-height: 100vh;
+  padding: 0 16px 160px;
+  background: #FFFFFF;
+}
+
+/* 顶部状态栏 */
+.game-header {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80);
+  margin: 0 -16px;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.round-info {
+  font-size: 16px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 4px;
+}
+
+.player-names {
+  font-size: 13px;
+  color: rgba(255,255,255,0.8);
+}
+
+.room-info {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.room-code, .room-mode {
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+  background: rgba(255,255,255,0.25);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+/* 实时积分面板 - 2x2网格 */
+.score-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.score-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  border: 2px solid #F4C0D1;
+  transition: all 0.2s;
+}
+
+.score-card.selected {
+  border-color: #FF6B9D;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.2);
+}
+
+.score-card.positive {
+  border-color: #4CAF50;
+  background: #F1F8E9;
+}
+
+.score-card.negative {
+  border-color: #E24B4A;
+  background: #FFF5F5;
+}
+
+.score-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin-bottom: 6px;
+}
+
+.score-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.score-card.positive .score-value {
+  color: #4CAF50;
+}
+
+.score-card.negative .score-value {
+  color: #E24B4A;
+}
+
+.score-round {
+  font-size: 11px;
+  color: #FF6B9D;
+  font-weight: 500;
+  background: #FFF0F5;
+  padding: 2px 8px;
+  border-radius: 8px;
+}
+
+.score-last {
+  font-size: 11px;
+  color: #B4B2A9;
+  margin-top: 2px;
+}
+
+/* 快捷记分 - 新设计 */
+.quick-score-section {
+  background: linear-gradient(180deg, #FFF0F5 0%, #FFE4EC 100%);
+  border-radius: 24px;
+  padding: 20px 16px;
+  margin-bottom: 12px;
+}
+
+.quick-score-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.quick-score-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.quick-score-hint {
+  font-size: 11px;
+  color: #B4B2A9;
+}
+
+/* 玩家选择 */
+.player-selector {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.player-chip {
+  flex: 1;
+  padding: 14px 0;
+  background: #FFFFFF;
+  border: 1.5px solid #E0D8DB;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  color: #5F5E5A;
+  transition: all 0.2s;
+}
+
+.player-chip.selected {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80);
+  border-color: #FF6B9D;
+  color: #FFFFFF;
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+  transform: scale(1.03);
+}
+
+/* 分数按钮行 */
+.score-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.score-row:last-child {
+  margin-bottom: 0;
+}
+
+.score-btn {
+  flex: 1;
+  padding: 14px 0;
+  border-radius: 14px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: #FFFFFF;
+  transition: all 0.15s;
+}
+
+.score-btn:active {
+  transform: scale(0.92);
+  opacity: 0.9;
+}
+
+/* 加分按钮 - 浅粉到深粉渐变 */
+.plus-1  { background: #FFB3C6; }
+.plus-5  { background: #F48FB1; }
+.plus-8  { background: #F06292; }
+.plus-10 { background: #EC407A; box-shadow: 0 3px 10px rgba(236, 64, 122, 0.4); }
+
+/* 减分按钮 - 浅蓝渐变 */
+.minus-1  { background: #B3D4F4; color: #185FA5; }
+.minus-5  { background: #90CAF9; color: #1565C0; }
+.minus-8  { background: #64B5F6; color: #1565C0; }
+.minus-10 { background: #42A5F5; color: #FFFFFF; box-shadow: 0 3px 10px rgba(66, 165, 245, 0.4); }
+
+/* 快速输入 - 新设计 */
+.quick-input-section {
+  background: linear-gradient(180deg, #F0F5FF 0%, #E8F0FE 100%);
+  border-radius: 24px;
+  padding: 20px 16px;
+  margin-bottom: 12px;
+}
+
+.quick-input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.quick-input-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.quick-input-hint {
+  font-size: 11px;
+  color: #B4B2A9;
+}
+
+.quick-input-wrap {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.quick-input-field {
+  flex: 1;
+  padding: 14px 16px;
+  background: #FFFFFF;
+  border: 1.5px solid #C8D6E5;
+  border-radius: 14px;
+  font-size: 15px;
+  color: #2C2C2A;
+}
+
+.btn-quick-submit {
+  padding: 14px 20px;
+  background: #C8D6E5;
+  color: #8395A7;
+  border-radius: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.btn-quick-submit.active {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #FFFFFF;
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+}
+
+.btn-quick-submit:active {
+  transform: scale(0.95);
+}
+
+.quick-input-tags {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.qtag {
+  padding: 6px 12px;
+  background: #FFFFFF;
+  border: 1px solid #C8D6E5;
+  border-radius: 12px;
+  font-size: 12px;
+  color: #5F5E5A;
+}
+
+/* 本轮记录 */
+.round-records {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 0.5px solid #F4C0D1;
+}
+
+.records-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.records-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5F5E5A;
+}
+
+.records-count {
+  font-size: 11px;
+  color: #B4B2A9;
+}
+
+.records-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.record-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: #FFF0F5;
+  border-radius: 16px;
+  font-size: 12px;
+}
+
+.record-name {
+  color: #5F5E5A;
+}
+
+.record-score.positive {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.record-score.negative {
+  color: #E24B4A;
+  font-weight: 600;
+}
+
+/* 历史轮次 */
+.history-section {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 12px 16px;
+  margin-bottom: 12px;
+  border: 0.5px solid #F4C0D1;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.history-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #5F5E5A;
+}
+
+.history-hint {
+  font-size: 11px;
+  color: #B4B2A9;
+}
+
+.history-round {
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 0.5px solid #F4C0D1;
+}
+
+.history-round:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.history-round-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #B4B2A9;
+  margin-bottom: 4px;
+}
+
+.history-round-scores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.history-score-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  background: #F1EFE8;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.hs-name {
+  color: #5F5E5A;
+}
+
+.hs-score.positive {
+  color: #4CAF50;
+  font-weight: 600;
+}
+
+.hs-score.negative {
+  color: #E24B4A;
+  font-weight: 600;
+}
+
+/* 底部操作 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 16px;
+  background: #FFFFFF;
+  border-top: 0.5px solid #F4C0D1;
+  box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+  display: flex;
+  gap: 10px;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.btn-round {
+  flex: 2;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #FFFFFF;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+  transition: all 0.15s;
+}
+
+.btn-round:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}
+
+.btn-end {
+  flex: 1;
+  background: linear-gradient(135deg, #E24B4A, #EF5350);
+  color: #FFFFFF;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(226, 75, 74, 0.3);
+  transition: all 0.15s;
+}
+
+.btn-end:active {
+  transform: scale(0.95);
+  opacity: 0.9;
+}

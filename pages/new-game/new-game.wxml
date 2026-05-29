@@ -1,0 +1,62 @@
+<!-- 新建牌局 -->
+<view class="container">
+  <!-- 标题 -->
+  <view class="page-header">
+    <view class="page-title">🀄 新建牌局</view>
+    <view class="page-desc">添加一起打牌的小伙伴</view>
+  </view>
+
+  <!-- 玩家列表 -->
+  <view class="players-section">
+    <view class="section-title">
+      <text>玩家 ({{players.length}}/4)</text>
+      <text class="section-hint">至少2人</text>
+    </view>
+
+    <!-- 已添加的玩家 -->
+    <view wx:for="{{players}}" wx:key="id" class="player-item">
+      <view class="player-avatar" style="background: {{colors[index]}}15; color: {{colors[index]}}">
+        {{item.name[0]}}
+      </view>
+      <view class="player-name">{{item.name}}</view>
+      <view class="player-remove" bindtap="onRemovePlayer" data-index="{{index}}">✕</view>
+    </view>
+
+    <!-- 添加玩家输入框 -->
+    <view wx:if="{{players.length < 4}}" class="add-player">
+      <input
+        class="player-input"
+        placeholder="输入玩家昵称"
+        value="{{inputName}}"
+        bindinput="onInputName"
+        bindconfirm="onAddPlayer"
+        maxlength="8"
+        confirm-type="done"
+      />
+      <view class="btn-add {{inputName ? 'active' : ''}}" bindtap="onAddPlayer">
+        <text>+</text>
+      </view>
+    </view>
+
+    <!-- 快捷添加 -->
+    <view wx:if="{{players.length < 4}}" class="quick-add">
+      <view class="quick-hint">快捷添加：</view>
+      <view class="quick-tags">
+        <view class="quick-tag" wx:for="{{quickNames}}" wx:key="*this" bindtap="onQuickAdd" data-name="{{item}}">
+          {{item}}
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部按钮 -->
+  <view class="bottom-actions safe-bottom">
+    <button
+      class="btn-confirm {{canStart ? '' : 'disabled'}}"
+      bindtap="onStartGame"
+      disabled="{{!canStart}}"
+    >
+      🀄 开始牌局
+    </button>
+  </view>
+</view>

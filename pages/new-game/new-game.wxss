@@ -1,0 +1,191 @@
+/* 新建牌局页样式 */
+
+.container {
+  min-height: 100vh;
+  padding: 0 20px 120px;
+  background: linear-gradient(180deg, #FFF0F5 0%, #FFFFFF 25%);
+}
+
+.page-header {
+  padding: 24px 0 20px;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: #888780;
+}
+
+/* 玩家区域 */
+.players-section {
+  margin-bottom: 24px;
+}
+
+.section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin-bottom: 12px;
+}
+
+.section-hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: #888780;
+}
+
+.player-item {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 8px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.player-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.player-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+  color: #2C2C2A;
+}
+
+.player-remove {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #F1EFE8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: #888780;
+}
+
+.player-remove:active {
+  background: #D3D1C7;
+}
+
+/* 添加玩家 */
+.add-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.player-input {
+  flex: 1;
+  background: #FFFFFF;
+  border: 1.5px solid #F4C0D1;
+  border-radius: 14px;
+  padding: 14px 16px;
+  font-size: 15px;
+}
+
+.btn-add {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #F1EFE8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: #888780;
+  transition: all 0.2s;
+}
+
+.btn-add.active {
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80);
+  color: #FFFFFF;
+}
+
+/* 快捷添加 */
+.quick-add {
+  margin-top: 16px;
+  padding: 16px;
+  background: #FFFFFF;
+  border-radius: 14px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.quick-hint {
+  font-size: 12px;
+  color: #888780;
+  margin-bottom: 10px;
+}
+
+.quick-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.quick-tag {
+  padding: 8px 16px;
+  background: #FFF0F5;
+  border-radius: 20px;
+  font-size: 13px;
+  color: #E24B4A;
+  border: 0.5px solid #F4C0D1;
+}
+
+.quick-tag:active {
+  background: #FBEAF0;
+}
+
+/* 底部按钮 */
+.bottom-actions {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px 20px;
+  background: #FFFFFF;
+  border-top: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.btn-confirm {
+  width: 100%;
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 18px !important;
+  font-size: 17px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(255, 107, 157, 0.3);
+  letter-spacing: 1px;
+}
+
+.btn-confirm::after {
+  display: none;
+}
+
+.btn-confirm.disabled {
+  background: #D3D1C7 !important;
+  box-shadow: none;
+}

@@ -1,0 +1,105 @@
+<!-- 排行榜 -->
+<view class="container {{themeClass}}">
+  <!-- 页面标题 -->
+  <view class="page-header">
+    <view class="page-title">🏆 排行榜</view>
+    <view class="page-desc">看看谁是雀神</view>
+  </view>
+
+  <!-- 时间筛选 -->
+  <view class="filter-section">
+    <view class="filter-chip {{period === 'month' ? 'active' : ''}}" bindtap="onFilter" data-period="month">本月</view>
+    <view class="filter-chip {{period === 'quarter' ? 'active' : ''}}" bindtap="onFilter" data-period="quarter">本季度</view>
+    <view class="filter-chip {{period === 'year' ? 'active' : ''}}" bindtap="onFilter" data-period="year">今年</view>
+    <view class="filter-chip {{period === 'all' ? 'active' : ''}}" bindtap="onFilter" data-period="all">全部</view>
+  </view>
+
+  <!-- 时间范围 -->
+  <view class="period-label">{{periodLabel}}</view>
+
+  <!-- 排行榜 -->
+  <view wx:if="{{rankings.length === 0}}" class="empty-state">
+    <view class="empty-icon">🎴</view>
+    <view class="empty-text">暂无数据</view>
+    <view class="empty-hint">打了牌之后就会有排名啦</view>
+  </view>
+
+  <!-- 前三名 -->
+  <view wx:if="{{rankings.length > 0}}" class="top3-section">
+    <!-- 第二名 -->
+    <view wx:if="{{rankings.length > 1}}" class="top-item rank-2">
+      <view class="top-medal">🥈</view>
+      <view class="top-avatar" style="background: {{avatarColors[1]}}15; color: {{avatarColors[1]}}">
+        {{rankings[1].name[0]}}
+      </view>
+      <view class="top-name">{{rankings[1].name}}</view>
+      <view class="top-score {{rankings[1].totalScore > 0 ? 'positive' : 'negative'}}">
+        {{rankings[1].totalScore > 0 ? '+' : ''}}{{rankings[1].totalScore}}
+      </view>
+      <view class="top-stats">{{rankings[1].totalGames}}局 胜率{{rankings[1].winRate}}%</view>
+    </view>
+
+    <!-- 第一名 -->
+    <view wx:if="{{rankings.length > 0}}" class="top-item rank-1">
+      <view class="top-medal">🥇</view>
+      <view class="top-avatar" style="background: {{avatarColors[0]}}15; color: {{avatarColors[0]}}">
+        {{rankings[0].name[0]}}
+      </view>
+      <view class="top-name">{{rankings[0].name}}</view>
+      <view class="top-score {{rankings[0].totalScore > 0 ? 'positive' : 'negative'}}">
+        {{rankings[0].totalScore > 0 ? '+' : ''}}{{rankings[0].totalScore}}
+      </view>
+      <view class="top-stats">{{rankings[0].totalGames}}局 胜率{{rankings[0].winRate}}%</view>
+    </view>
+
+    <!-- 第三名 -->
+    <view wx:if="{{rankings.length > 2}}" class="top-item rank-3">
+      <view class="top-medal">🥉</view>
+      <view class="top-avatar" style="background: {{avatarColors[2]}}15; color: {{avatarColors[2]}}">
+        {{rankings[2].name[0]}}
+      </view>
+      <view class="top-name">{{rankings[2].name}}</view>
+      <view class="top-score {{rankings[2].totalScore > 0 ? 'positive' : 'negative'}}">
+        {{rankings[2].totalScore > 0 ? '+' : ''}}{{rankings[2].totalScore}}
+      </view>
+      <view class="top-stats">{{rankings[2].totalGames}}局 胜率{{rankings[2].winRate}}%</view>
+    </view>
+  </view>
+
+  <!-- 完整排行列表 -->
+  <view wx:if="{{rankings.length > 3}}" class="list-section">
+    <view class="section-title">完整排名</view>
+
+    <view wx:for="{{rankings}}" wx:key="playerId" wx:if="{{index >= 3}}" class="rank-item">
+      <view class="rank-num">{{index + 1}}</view>
+      <view class="rank-avatar" style="background: {{avatarColors[index % 4]}}15; color: {{avatarColors[index % 4]}}">
+        {{item.name[0]}}
+      </view>
+      <view class="rank-info">
+        <view class="rank-name">{{item.name}}</view>
+        <view class="rank-stats">
+          {{item.totalGames}}局 · 赢{{item.wins}}局 · 胜率{{item.winRate}}%
+        </view>
+      </view>
+      <view class="rank-score {{item.totalScore > 0 ? 'positive' : item.totalScore < 0 ? 'negative' : ''}}">
+        {{item.totalScore > 0 ? '+' : ''}}{{item.totalScore}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计摘要 -->
+  <view wx:if="{{rankings.length > 0}}" class="summary-section">
+    <view class="summary-card">
+      <view class="summary-value">{{totalGames}}</view>
+      <view class="summary-label">总局数</view>
+    </view>
+    <view class="summary-card">
+      <view class="summary-value">{{totalPlayers}}</view>
+      <view class="summary-label">参与人数</view>
+    </view>
+    <view class="summary-card">
+      <view class="summary-value">{{totalRounds}}</view>
+      <view class="summary-label">总轮数</view>
+    </view>
+  </view>
+</view>

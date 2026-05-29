@@ -1,0 +1,25 @@
+/* 统计数字卡片样式 */
+
+.stat-card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  border: 0.5px solid rgba(0,0,0,0.06);
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8E8E93;
+}

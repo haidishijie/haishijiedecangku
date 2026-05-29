@@ -1,0 +1,296 @@
+/* 胡乐 - iOS 23 极简风格 */
+
+/* 引入主题样式 */
+@import './styles/themes.wxss';
+
+/* 默认主题变量 */
+page {
+  --color-primary: #007AFF;
+  --color-success: #34C759;
+  --color-warning: #FF9500;
+  --color-error: #FF3B30;
+  --color-purple: #AF52DE;
+  --color-teal: #5AC8FA;
+  --color-pink: #FF2D55;
+  --color-indigo: #5856D6;
+
+  --color-text-primary: #1C1C1E;
+  --color-text-secondary: #3C3C43;
+  --color-text-tertiary: #8E8E93;
+  --color-text-placeholder: #C7C7CC;
+
+  --color-divider: rgba(0,0,0,0.08);
+  --color-background: #F2F2F7;
+  --color-card-bg: rgba(255,255,255,0.72);
+  --color-card-border: rgba(0,0,0,0.06);
+
+  --font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-full: 50%;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 20px;
+  --space-2xl: 24px;
+  --space-3xl: 32px;
+  --space-4xl: 40px;
+
+  font-family: var(--font-family);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Typography */
+.text-large-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.text-title1 {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.text-title2 {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.text-title3 {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.text-headline {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.text-body {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.text-callout {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.text-subhead {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.text-footnote {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.text-caption1 {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.text-caption2 {
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* Card */
+.card {
+  background: var(--color-card-bg);
+  backdrop-filter: blur(40px) saturate(180%);
+  -webkit-backdrop-filter: blur(40px) saturate(180%);
+  border-radius: var(--radius-xl);
+  padding: 18px 20px;
+  border: 0.5px solid var(--color-card-border);
+}
+
+.card-highlight {
+  background: linear-gradient(135deg, var(--color-success), #30D158);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  color: white;
+}
+
+/* Buttons */
+.btn-primary {
+  width: 100%;
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: var(--radius-lg);
+  padding: 18px;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.btn-primary:active {
+  opacity: 0.9;
+  transform: scale(0.98);
+}
+
+.btn-secondary {
+  width: 100%;
+  background: var(--color-card-bg);
+  backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(0,0,0,0.1);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+.btn-secondary:active {
+  background: rgba(0,0,0,0.05);
+}
+
+/* Input */
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(0,0,0,0.03);
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 17px;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  box-sizing: border-box;
+}
+
+/* Badge */
+.badge-success {
+  background: var(--color-success);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+}
+
+.badge-error {
+  background: var(--color-error);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+}
+
+/* Tag */
+.tag {
+  background: rgba(0,0,0,0.05);
+  color: var(--color-text-tertiary);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tag-active {
+  background: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Avatar */
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: white;
+}
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+}
+
+.avatar-lg {
+  width: 60px;
+  height: 60px;
+  border-radius: var(--radius-xl);
+}
+
+/* Score */
+.score-positive {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-success);
+  letter-spacing: -1px;
+}
+
+.score-negative {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-error);
+  letter-spacing: -1px;
+}
+
+/* Layout */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-sm { gap: 8px; }
+.gap-md { gap: 12px; }
+.gap-lg { gap: 16px; }
+
+/* Spacing */
+.mt-sm { margin-top: 8px; }
+.mt-md { margin-top: 12px; }
+.mt-lg { margin-top: 16px; }
+.mb-sm { margin-bottom: 8px; }
+.mb-md { margin-bottom: 12px; }
+.mb-lg { margin-bottom: 16px; }
+.p-sm { padding: 8px; }
+.p-md { padding: 12px; }
+.p-lg { padding: 16px; }
+
+/* Text */
+.text-center { text-align: center; }
+.text-primary { color: var(--color-primary); }
+.text-success { color: var(--color-success); }
+.text-error { color: var(--color-error); }
+.text-secondary { color: var(--color-text-secondary); }
+.text-tertiary { color: var(--color-text-tertiary); }
+
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+.font-heavy { font-weight: 800; }
+
+/* Rounded */
+.rounded-sm { border-radius: var(--radius-sm); }
+.rounded-md { border-radius: var(--radius-md); }
+.rounded-lg { border-radius: var(--radius-lg); }
+.rounded-xl { border-radius: var(--radius-xl); }
+.rounded-full { border-radius: var(--radius-full); }
+
+/* Safe Area */
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
