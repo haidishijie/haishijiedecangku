@@ -4,17 +4,6 @@
   <view class="game-header">
     <view class="round-info">🀄 第 {{currentRound}} 轮</view>
     <view class="player-names">{{playerNamesStr}}</view>
-    <!-- 房间信息 -->
-    <view wx:if="{{isRoomMode}}" class="room-info">
-      <text class="room-code">房间号: {{roomCode}}</text>
-      <text class="room-mode">{{roomMode === 'collaborative' ? '协作模式' : '观战模式'}}</text>
-    </view>
-  </view>
-
-  <!-- 房间同步状态 -->
-  <view wx:if="{{isRoomMode}}" class="sync-status">
-    <view class="sync-dot {{isPolling ? 'active' : ''}}"></view>
-    <text class="sync-text">{{isPolling ? '实时同步中' : '未同步'}}</text>
   </view>
 
   <!-- 实时积分面板 -->
@@ -35,30 +24,6 @@
         上轮 {{item.lastRound > 0 ? '+' : ''}}{{item.lastRound}}
       </view>
       <view class="score-last" wx:else>上轮 --</view>
-    </view>
-  </view>
-
-  <!-- 快速输入 -->
-  <view class="quick-input-section">
-    <view class="quick-input-header">
-      <text class="quick-input-title">💬 快速输入</text>
-      <text class="quick-input-hint">语音或手动输入</text>
-    </view>
-    <view class="quick-input-wrap">
-      <input
-        class="quick-input-field"
-        placeholder="1加5分2减5分 或 小明加5"
-        value="{{quickInput}}"
-        bindinput="onQuickInput"
-        bindconfirm="onQuickSubmit"
-        confirm-type="done"
-      />
-      <view class="btn-quick-submit {{quickInput ? 'active' : ''}}" bindtap="onQuickSubmit">记分</view>
-    </view>
-    <view class="quick-input-tags">
-      <view class="qtag" wx:for="{{players}}" wx:key="id" wx:for-index="idx">
-        {{idx + 1}}号={{item.name}}
-      </view>
     </view>
   </view>
 
@@ -95,6 +60,30 @@
       <view class="score-btn minus-5" bindtap="onQuickScore" data-score="-5">-5</view>
       <view class="score-btn minus-8" bindtap="onQuickScore" data-score="-8">-8</view>
       <view class="score-btn minus-10" bindtap="onQuickScore" data-score="-10">-10</view>
+    </view>
+  </view>
+
+  <!-- 快速输入 -->
+  <view class="quick-input-section">
+    <view class="quick-input-header">
+      <text class="quick-input-title">💬 快速输入</text>
+      <text class="quick-input-hint">语音或手动输入</text>
+    </view>
+    <view class="quick-input-wrap">
+      <input
+        class="quick-input-field"
+        placeholder="1加5分2减5分 或 小明加5"
+        value="{{quickInput}}"
+        bindinput="onQuickInput"
+        bindconfirm="onQuickSubmit"
+        confirm-type="done"
+      />
+      <view class="btn-quick-submit {{quickInput ? 'active' : ''}}" bindtap="onQuickSubmit">记分</view>
+    </view>
+    <view class="quick-input-tags">
+      <view class="qtag" wx:for="{{players}}" wx:key="id" wx:for-index="idx">
+        {{idx + 1}}号={{item.name}}
+      </view>
     </view>
   </view>
 
@@ -135,9 +124,6 @@
   <view class="bottom-actions safe-bottom">
     <button class="btn-round" bindtap="onConfirmRound">
       ✅ 确认本轮
-    </button>
-    <button class="btn-share" wx:if="{{isRoomMode}}" open-type="share">
-      📤 邀请好友
     </button>
     <button class="btn-end" bindtap="onEndGame">
       结束牌局

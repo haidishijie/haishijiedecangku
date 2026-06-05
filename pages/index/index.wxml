@@ -13,18 +13,11 @@
       <text class="btn-icon">🀄</text>
       <text class="btn-text">快速开局</text>
     </button>
-  </view>
-
-  <!-- 房间功能 -->
-  <view class="room-section">
-    <button class="btn-create-room" bindtap="onCreateRoom">
-      <text>🏠 创建房间</text>
-    </button>
-    <button class="btn-join-room" bindtap="onJoinRoom">
-      <text>🚪 加入房间</text>
+    <button class="btn-start btn-start-second" bindtap="onStartGameUnlimited">
+      <text class="btn-icon">🃏</text>
+      <text class="btn-text">快速开局</text>
     </button>
   </view>
-
   <!-- 最近战绩 -->
   <view class="recent-section">
     <view class="section-title">最近战绩</view>

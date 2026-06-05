@@ -7,12 +7,16 @@ Page({
     players: [],
     inputName: '',
     canStart: false,
+    unlimited: false,
+    maxPlayers: 4,
     colors: ['#E24B4A', '#185FA5', '#D85A30', '#3B6D11'],
     quickNames: ['小明', '小红', '大壮', '阿呆', '小李', '老王', '阿花', '小胖']
   },
 
   onLoad(options) {
     const currentUser = app.globalData.currentUser
+    const unlimited = options.unlimited === '1'
+    const maxPlayers = unlimited ? 8 : 4
 
     // 默认把自己加为第一个玩家
     let players = []
@@ -28,7 +32,7 @@ Page({
       const names = decodeURIComponent(options.names).split(',')
       names.forEach(name => {
         const trimmedName = name.trim()
-        if (trimmedName && !players.some(p => p.name === trimmedName) && players.length < 4) {
+        if (trimmedName && !players.some(p => p.name === trimmedName) && players.length < maxPlayers) {
           players.push({
             id: generateId(),
             name: trimmedName
@@ -38,6 +42,8 @@ Page({
     }
 
     this.setData({
+      unlimited,
+      maxPlayers,
       players,
       canStart: players.length >= 2
     })
@@ -63,8 +69,8 @@ Page({
     const name = this.data.inputName.trim()
     if (!name) return
 
-    if (this.data.players.length >= 4) {
-      wx.showToast({ title: '最多4人', icon: 'none' })
+    if (this.data.players.length >= this.data.maxPlayers) {
+      wx.showToast({ title: `最多${this.data.maxPlayers}人`, icon: 'none' })
       return
     }
 
@@ -92,8 +98,8 @@ Page({
   // 快捷添加
   onQuickAdd(e) {
     const name = e.currentTarget.dataset.name
-    if (this.data.players.length >= 4) {
-      wx.showToast({ title: '最多4人', icon: 'none' })
+    if (this.data.players.length >= this.data.maxPlayers) {
+      wx.showToast({ title: `最多${this.data.maxPlayers}人`, icon: 'none' })
       return
     }
     if (this.data.players.some(p => p.name === name)) {

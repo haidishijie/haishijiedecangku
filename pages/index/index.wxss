@@ -64,49 +64,10 @@
   font-size: 22px;
 }
 
-/* 房间功能 */
-.room-section {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.btn-create-room,
-.btn-join-room {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 0 !important;
-  border-radius: 14px !important;
-  font-size: 14px !important;
-  font-weight: 500 !important;
-}
-
-.btn-create-room {
-  background: #FFFFFF !important;
-  color: #E24B4A !important;
-  border: 1.5px solid #F4C0D1 !important;
-}
-
-.btn-create-room::after {
-  display: none;
-}
-
-.btn-join-room {
-  background: #FFFFFF !important;
-  color: #185FA5 !important;
-  border: 1.5px solid #B5D4F4 !important;
-}
-
-.btn-join-room::after {
-  display: none;
-}
-
-.btn-create-room:active,
-.btn-join-room:active {
-  transform: scale(0.97);
-  opacity: 0.9;
+.btn-start-second {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #FF8C42, #FFB347) !important;
+  box-shadow: 0 6px 20px rgba(255, 140, 66, 0.35);
 }
 
 /* 统计卡片 */

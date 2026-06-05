@@ -26,21 +26,6 @@
   color: rgba(255,255,255,0.8);
 }
 
-.room-info {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.room-code, .room-mode {
-  font-size: 12px;
-  color: rgba(255,255,255,0.9);
-  background: rgba(255,255,255,0.25);
-  padding: 3px 10px;
-  border-radius: 10px;
-}
-
 /* 实时积分面板 - 2x2网格 */
 .score-board {
   display: grid;

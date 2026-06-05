@@ -33,6 +33,54 @@
     </view>
   </view>
 
+  <!-- 麻将统计 -->
+  <view class="mahjong-stats-section">
+    <view class="section-title">🀄 麻将统计</view>
+
+    <!-- 最大赢家 / 最大输家 -->
+    <view class="stats-pair">
+      <view class="stat-card highlight-win">
+        <view class="stat-label">🔥 最大赢家</view>
+        <view class="stat-player">{{totalStats.maxWinner.playerName}}</view>
+        <view class="stat-value positive">+{{totalStats.maxWinner.total}}</view>
+      </view>
+      <view class="stat-card highlight-lose">
+        <view class="stat-label">💨 最大输家</view>
+        <view class="stat-player">{{totalStats.maxLoser.playerName}}</view>
+        <view class="stat-value negative">{{totalStats.maxLoser.total}}</view>
+      </view>
+    </view>
+
+    <!-- 每人详细统计 -->
+    <view wx:for="{{rankings}}" wx:key="playerId" class="player-stats-card">
+      <view class="ps-header">
+        <view class="ps-avatar" style="background: {{playerColors[item.originalIndex]}}">{{item.playerName[0]}}</view>
+        <view class="ps-name">{{item.playerName}}</view>
+        <view class="ps-total {{item.total > 0 ? 'positive' : item.total < 0 ? 'negative' : ''}}">
+          {{item.total > 0 ? '+' : ''}}{{item.total}}
+        </view>
+      </view>
+      <view class="ps-grid">
+        <view class="ps-item">
+          <text class="ps-value">{{item.winRounds}}/{{roundCount}}</text>
+          <text class="ps-label">📊 胜率 {{roundCount > 0 ? Math.round(item.winRounds / roundCount * 100) : 0}}%</text>
+        </view>
+        <view class="ps-item">
+          <text class="ps-value">{{item.avgScore > 0 ? '+' : ''}}{{item.avgScore}}</text>
+          <text class="ps-label">📈 平均每轮</text>
+        </view>
+        <view class="ps-item">
+          <text class="ps-value">{{item.dealerRounds}}次</text>
+          <text class="ps-label">🏆 庄</text>
+        </view>
+        <view class="ps-item">
+          <text class="ps-value">{{item.selfDrawCount}}次</text>
+          <text class="ps-label">🀄 自摸({{item.selfDrawRate}}%)</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
   <!-- 逐轮详情 -->
   <view class="rounds-section">
     <view class="section-title">逐轮详情</view>

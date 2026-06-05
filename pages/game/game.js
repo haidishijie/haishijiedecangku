@@ -1,17 +1,9 @@
-// 记分页逻辑（支持本地模式 + 房间模式）
+// 记分页逻辑（仅本地模式）
 const app = getApp()
 const { generateId, sum } = require('../../utils/util')
-const roomUtil = require('../../utils/room')
 
 Page({
   data: {
-    // 模式
-    isRoomMode: false,
-    roomMode: '',
-    roomCode: '',
-    roomId: '',
-
-    // 本地模式
     gameId: '',
 
     // 通用
@@ -24,30 +16,14 @@ Page({
     customScore: '',
     quickInput: '',
     voiceResult: '',
-    roundHistory: [],
-
-    // 房间模式特有
-    pendingScores: [],
-    isPolling: false,
-    lastPollTime: ''
+    roundHistory: []
   },
 
-  _pollTimer: null,
-
   onLoad(options) {
-    if (options.roomId) {
-      this.initRoomMode(options)
-    } else if (options.gameId) {
+    if (options.gameId) {
       this.initLocalMode(options)
     } else {
       wx.showToast({ title: '参数错误', icon: 'none' })
-    }
-  },
-
-  onUnload() {
-    if (this._pollTimer) {
-      clearInterval(this._pollTimer)
-      this._pollTimer = null
     }
   },
 
@@ -76,91 +52,12 @@ Page({
 
     this.setData({
       gameId,
-      isRoomMode: false,
       players,
       playerNamesStr: players.map(p => p.name).join(' '),
       currentRound: game.rounds.length + 1,
       selectedIndex: 0,
       roundHistory
     })
-  },
-
-  async initRoomMode(options) {
-    const { roomId, roomCode, mode } = options
-
-    this.setData({
-      isRoomMode: true,
-      roomId,
-      roomCode,
-      roomMode: mode || 'collaborative'
-    })
-
-    await this.loadRoomData()
-    this.startPolling()
-  },
-
-  async loadRoomData() {
-    const room = await roomUtil.getRoom(this.data.roomId)
-    if (!room) {
-      wx.showToast({ title: '房间已关闭', icon: 'none' })
-      return
-    }
-
-    if (room.status === 'ended') {
-      wx.redirectTo({
-        url: `/pages/result/result?roomId=${this.data.roomId}`
-      })
-      return
-    }
-
-    const players = room.players.map(p => ({
-      id: p.id,
-      name: p.name,
-      total: p.total || 0,
-      lastRound: 0
-    }))
-
-    if (room.rounds.length > 0) {
-      const lastRound = room.rounds[room.rounds.length - 1]
-      players.forEach(p => {
-        const score = lastRound.scores.find(s => s.playerId === p.id)
-        p.lastRound = score ? score.score : 0
-      })
-    }
-
-    // 获取最近4轮历史
-    const roundHistory = room.rounds.slice(-4).reverse().map(round => ({
-      roundNumber: round.roundNumber,
-      scores: round.scores
-    }))
-
-    this.setData({
-      players,
-      playerNamesStr: players.map(p => p.name).join(' '),
-      currentRound: room.currentRound || 1,
-      pendingScores: room.pendingScores || [],
-      selectedIndex: this.data.selectedIndex < 0 ? 0 : this.data.selectedIndex,
-      roundHistory
-    })
-  },
-
-  startPolling() {
-    if (this._pollTimer) return
-
-    this._pollTimer = setInterval(async () => {
-      await this.loadRoomData()
-      this.setData({ lastPollTime: new Date().toLocaleTimeString() })
-    }, 3000)
-
-    this.setData({ isPolling: true })
-  },
-
-  stopPolling() {
-    if (this._pollTimer) {
-      clearInterval(this._pollTimer)
-      this._pollTimer = null
-    }
-    this.setData({ isPolling: false })
   },
 
   // ========== 快速输入 ==========
@@ -211,7 +108,6 @@ Page({
     // 方式2: 按名字匹配 (小明加5, 阿呆减3)
     if (parsedScores.length === 0) {
       players.forEach((player, playerIndex) => {
-        // 转义特殊字符
         const escapedName = player.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
         const namePattern = new RegExp(`${escapedName}\\s*([+\\-加减])\\s*(\\d+)`, 'g')
         let nameMatch
@@ -291,7 +187,6 @@ Page({
     })
 
     wx.vibrateShort({ type: 'light' })
-    wx.showToast({ title: `记了 ${newScores.length} 笔 ✅`, icon: 'none' })
   },
 
   // ========== 记分操作 ==========
@@ -391,73 +286,50 @@ Page({
     }
   },
 
-  async saveRound() {
-    const { isRoomMode, gameId, players, currentRoundScores, currentRound } = this.data
+  saveRound() {
+    const { gameId, players, currentRoundScores, currentRound } = this.data
 
-    if (isRoomMode) {
-      wx.showLoading({ title: '提交中...' })
+    const game = app.globalData.games.find(g => g.id === gameId)
+    if (!game) return
 
-      const scoresToSubmit = currentRoundScores.map(s => ({
+    const round = {
+      id: generateId(),
+      roundNumber: currentRound,
+      scores: currentRoundScores.map(s => ({
         playerId: s.playerId,
+        playerName: s.playerName,
         score: s.score
-      }))
-
-      const success = await roomUtil.submitScores(this.data.roomId, scoresToSubmit)
-      wx.hideLoading()
-
-      if (success) {
-        if (this.data.roomMode === 'collaborative') {
-          await roomUtil.confirmRound(this.data.roomId)
-        }
-        wx.showToast({ title: '记录成功 ✅', icon: 'none' })
-        await this.loadRoomData()
-        this.setData({ currentRoundScores: [], selectedIndex: 0, customScore: '', voiceResult: '' })
-      } else {
-        wx.showToast({ title: '提交失败', icon: 'none' })
-      }
-    } else {
-      const game = app.globalData.games.find(g => g.id === gameId)
-      if (!game) return
-
-      const round = {
-        id: generateId(),
-        roundNumber: currentRound,
-        scores: currentRoundScores.map(s => ({
-          playerId: s.playerId,
-          playerName: s.playerName,
-          score: s.score
-        })),
-        timestamp: new Date().toISOString()
-      }
-
-      game.rounds.push(round)
-      app.saveGames()
-
-      const newPlayers = players.map(p => {
-        const lastRoundScore = currentRoundScores
-          .filter(s => s.playerId === p.id)
-          .reduce((sum, s) => sum + s.score, 0)
-        return { ...p, lastRound: lastRoundScore, roundPending: 0 }
-      })
-
-      // 更新历史轮次（最近4轮）
-      const roundHistory = game.rounds.slice(-4).reverse().map(r => ({
-        roundNumber: r.roundNumber,
-        scores: r.scores
-      }))
-
-      wx.showToast({ title: '记录成功 ✅', icon: 'none' })
-
-      this.setData({
-        players: newPlayers,
-        currentRoundScores: [],
-        currentRound: currentRound + 1,
-        selectedIndex: 0,
-        customScore: '',
-        quickInput: '',
-        roundHistory
-      })
+      })),
+      timestamp: new Date().toISOString()
     }
+
+    game.rounds.push(round)
+    app.saveGames()
+
+    const newPlayers = players.map(p => {
+      const lastRoundScore = currentRoundScores
+        .filter(s => s.playerId === p.id)
+        .reduce((sum, s) => sum + s.score, 0)
+      return { ...p, lastRound: lastRoundScore, roundPending: 0 }
+    })
+
+    // 更新历史轮次（最近4轮）
+    const roundHistory = game.rounds.slice(-4).reverse().map(r => ({
+      roundNumber: r.roundNumber,
+      scores: r.scores
+    }))
+
+    wx.showToast({ title: '记录成功 ✅', icon: 'none' })
+
+    this.setData({
+      players: newPlayers,
+      currentRoundScores: [],
+      currentRound: currentRound + 1,
+      selectedIndex: 0,
+      customScore: '',
+      quickInput: '',
+      roundHistory
+    })
   },
 
   // ========== 结束牌局 ==========
@@ -473,7 +345,8 @@ Page({
         cancelText: '直接结束',
         success: (res) => {
           if (res.confirm) {
-            this.saveRound().then(() => this.endGame())
+            this.saveRound()
+            this.endGame()
           } else {
             this.endGame()
           }
@@ -484,41 +357,27 @@ Page({
     }
   },
 
-  async endGame() {
-    const { isRoomMode, gameId, roomId, players } = this.data
+  endGame() {
+    const { gameId, players } = this.data
 
-    if (isRoomMode) {
-      this.stopPolling()
-      await roomUtil.endRoom(roomId)
-      wx.redirectTo({
-        url: `/pages/result/result?roomId=${roomId}`
-      })
-    } else {
-      const game = app.globalData.games.find(g => g.id === gameId)
-      if (!game) return
+    const game = app.globalData.games.find(g => g.id === gameId)
+    if (!game) return
 
-      game.status = 'ended'
-      game.endTime = new Date().toISOString()
-      game.finalScores = players.map(p => ({
-        playerId: p.id,
-        playerName: p.name,
-        total: p.total
-      }))
+    game.status = 'ended'
+    game.endTime = new Date().toISOString()
+    game.finalScores = players.map(p => ({
+      playerId: p.id,
+      playerName: p.name,
+      total: p.total
+    }))
 
-      app.saveGames()
-      wx.redirectTo({
-        url: `/pages/result/result?gameId=${gameId}`
-      })
-    }
+    app.saveGames()
+    wx.redirectTo({
+      url: `/pages/result/result?gameId=${gameId}`
+    })
   },
 
   onShareAppMessage() {
-    if (this.data.isRoomMode) {
-      return {
-        title: `胡乐房间 ${this.data.roomCode} - 快来一起记分！`,
-        path: `/pages/join-room/join-room?roomCode=${this.data.roomCode}`
-      }
-    }
     return {
       title: '胡乐 - 打牌记分',
       path: '/pages/index/index'

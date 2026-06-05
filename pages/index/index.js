@@ -45,10 +45,17 @@ Page({
     this.setData({ stats, recentGames })
   },
 
-  // 快速开局
+  // 快速开局（默认）
   onStartGame() {
     wx.navigateTo({
       url: '/pages/new-game/new-game'
+    })
+  },
+
+  // 快速开局（无人数上限）
+  onStartGameUnlimited() {
+    wx.navigateTo({
+      url: '/pages/new-game/new-game?unlimited=1'
     })
   },
 
@@ -78,20 +85,6 @@ Page({
   onGoProfile() {
     wx.navigateTo({
       url: '/pages/profile/profile'
-    })
-  },
-
-  // 创建房间
-  onCreateRoom() {
-    wx.navigateTo({
-      url: '/pages/create-room/create-room'
-    })
-  },
-
-  // 加入房间
-  onJoinRoom() {
-    wx.navigateTo({
-      url: '/pages/join-room/join-room'
     })
   }
 })

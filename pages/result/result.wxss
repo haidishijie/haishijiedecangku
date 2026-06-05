@@ -157,6 +157,134 @@
   font-weight: 600;
 }
 
+/* 麻将统计 */
+.mahjong-stats-section {
+  margin-bottom: 24px;
+}
+
+.stats-pair {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  flex: 1;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  text-align: center;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.stat-card.highlight-win {
+  background: linear-gradient(135deg, #FFF0F5, #FFE4EC);
+  border-color: #F4C0D1;
+}
+
+.stat-card.highlight-lose {
+  background: linear-gradient(135deg, #E8F0FE, #D6E8F7);
+  border-color: #B5D4F4;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: #888780;
+  margin-bottom: 6px;
+}
+
+.stat-player {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2C2C2A;
+  margin-bottom: 4px;
+}
+
+.stat-value.positive {
+  font-size: 20px;
+  font-weight: 700;
+  color: #E24B4A;
+}
+
+.stat-value.negative {
+  font-size: 20px;
+  font-weight: 700;
+  color: #185FA5;
+}
+
+.player-stats-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 10px;
+  border: 0.5px solid rgba(211, 209, 199, 0.5);
+}
+
+.ps-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 0.5px solid rgba(211, 209, 199, 0.3);
+}
+
+.ps-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-right: 10px;
+}
+
+.ps-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.ps-total {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.ps-total.positive {
+  color: #E24B4A;
+}
+
+.ps-total.negative {
+  color: #185FA5;
+}
+
+.ps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+
+.ps-item {
+  text-align: center;
+}
+
+.ps-value {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #2C2C2A;
+  margin-bottom: 2px;
+}
+
+.ps-label {
+  display: block;
+  font-size: 10px;
+  color: #888780;
+}
+
 /* 底部操作 */
 .bottom-actions {
   position: fixed;
@@ -206,5 +334,5 @@
   left: -9999px;
   top: -9999px;
   width: 375px;
-  height: 600px;
+  height: 1200px;
 }
