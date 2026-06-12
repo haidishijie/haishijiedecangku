@@ -1,15 +1,6 @@
 // 胡乐 - 打牌记分小程序
 App({
   onLaunch() {
-    // 初始化云开发
-    if (wx.cloud) {
-      wx.cloud.init({
-        env: 'cloud1-d9goawdnze2d089fc',
-        traceUser: true
-      })
-      this.globalData.db = wx.cloud.database()
-    }
-
     // 读取本地存储的数据（带异常处理）
     try {
       this.globalData.games = wx.getStorageSync('games') || []
@@ -157,7 +148,6 @@ App({
   globalData: {
     games: [],         // 本地牌局记录
     players: [],       // 牌友列表
-    currentUser: null, // 当前用户信息
-    db: null           // 云数据库实例
+    currentUser: null  // 当前用户信息
   }
 })

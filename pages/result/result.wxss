@@ -6,6 +6,46 @@
   background: linear-gradient(180deg, #FFF0F5 0%, #FFFFFF 30%);
 }
 
+/* 未找到牌局 */
+.not-found-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px;
+  text-align: center;
+}
+
+.not-found-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.not-found-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: #2C2C2A;
+  margin-bottom: 10px;
+}
+
+.not-found-desc {
+  font-size: 13px;
+  color: #888780;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.btn-back-home {
+  width: 200px;
+  background: linear-gradient(135deg, #FF6B9D, #FF8A80) !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  border-radius: 16px !important;
+  padding: 14px !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+}
+
 /* 胜利横幅 */
 .victory-banner {
   text-align: center;
@@ -328,11 +368,14 @@
   display: none;
 }
 
-/* 隐藏的 canvas */
+/* 隐藏的 canvas — opacity:0 但保留在渲染流中 */
 .share-canvas {
   position: fixed;
-  left: -9999px;
-  top: -9999px;
+  left: 0;
+  top: 0;
   width: 375px;
-  height: 1200px;
+  height: 2000px;
+  opacity: 0;
+  pointer-events: none;
+  z-index: -1;
 }

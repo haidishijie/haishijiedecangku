@@ -15,7 +15,7 @@
 
     <!-- 已添加的玩家 -->
     <view wx:for="{{players}}" wx:key="id" class="player-item">
-      <view class="player-avatar" style="background: {{colors[index]}}15; color: {{colors[index]}}">
+      <view class="player-avatar" style="background: rgba(255,255,255,0.85); color: {{colors[index] || '#5F5E5A'}};">
         {{item.name[0]}}
       </view>
       <view class="player-name">{{item.name}}</view>

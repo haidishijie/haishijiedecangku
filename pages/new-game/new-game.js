@@ -9,8 +9,8 @@ Page({
     canStart: false,
     unlimited: false,
     maxPlayers: 4,
-    colors: ['#E24B4A', '#185FA5', '#D85A30', '#3B6D11'],
-    quickNames: ['小明', '小红', '大壮', '阿呆', '小李', '老王', '阿花', '小胖']
+    colors: ['#E24B4A', '#185FA5', '#D85A30', '#3B6D11', '#AF52DE', '#FF9500', '#5AC8FA', '#34C759'],
+    quickNames: ['小明', '小红', '小李', '小胖', '大壮', 'Leo', '维尼', '阿篱']
   },
 
   onLoad(options) {

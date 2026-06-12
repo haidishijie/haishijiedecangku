@@ -9,9 +9,9 @@ Page({
     // 通用
     players: [],
     playerNamesStr: '',
-    playerColors: ['#E24B4A', '#185FA5', '#D85A30', '#3B6D11'],
+    playerColors: ['#E24B4A', '#185FA5', '#D85A30', '#3B6D11', '#AF52DE', '#FF9500', '#5AC8FA', '#34C759'],
     currentRound: 1,
-    selectedIndex: 0,
+    selectedIndex: -1,
     currentRoundScores: [],
     customScore: '',
     quickInput: '',
@@ -20,6 +20,12 @@ Page({
   },
 
   onLoad(options) {
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+
     if (options.gameId) {
       this.initLocalMode(options)
     } else {
@@ -55,7 +61,7 @@ Page({
       players,
       playerNamesStr: players.map(p => p.name).join(' '),
       currentRound: game.rounds.length + 1,
-      selectedIndex: 0,
+      selectedIndex: -1,
       roundHistory
     })
   },
@@ -106,29 +112,28 @@ Page({
     }
 
     // 方式2: 按名字匹配 (小明加5, 阿呆减3)
-    if (parsedScores.length === 0) {
-      players.forEach((player, playerIndex) => {
-        const escapedName = player.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-        const namePattern = new RegExp(`${escapedName}\\s*([+\\-加减])\\s*(\\d+)`, 'g')
-        let nameMatch
+    // 注意：两种模式合并，不再串行fallback，支持混合输入如"1加5小明减3"
+    players.forEach((player, playerIndex) => {
+      const escapedName = player.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+      const namePattern = new RegExp(`${escapedName}\\s*([+\\-加减])\\s*(\\d+)`, 'g')
+      let nameMatch
 
-        while ((nameMatch = namePattern.exec(text)) !== null) {
-          const op = nameMatch[1]
-          const score = parseInt(nameMatch[2])
+      while ((nameMatch = namePattern.exec(text)) !== null) {
+        const op = nameMatch[1]
+        const score = parseInt(nameMatch[2])
 
-          if (score > 0) {
-            const finalScore = (op === '-' || op === '减') ? -Math.abs(score) : Math.abs(score)
+        if (score > 0) {
+          const finalScore = (op === '-' || op === '减') ? -Math.abs(score) : Math.abs(score)
 
-            parsedScores.push({
-              playerIndex,
-              playerId: player.id,
-              playerName: player.name,
-              score: finalScore
-            })
-          }
+          parsedScores.push({
+            playerIndex,
+            playerId: player.id,
+            playerName: player.name,
+            score: finalScore
+          })
         }
-      })
-    }
+      }
+    })
 
     if (parsedScores.length === 0) {
       wx.showToast({ title: '没识别到，试试 1加5 或 小明加5', icon: 'none' })
@@ -325,7 +330,7 @@ Page({
       players: newPlayers,
       currentRoundScores: [],
       currentRound: currentRound + 1,
-      selectedIndex: 0,
+      selectedIndex: -1,
       customScore: '',
       quickInput: '',
       roundHistory
@@ -358,18 +363,31 @@ Page({
   },
 
   endGame() {
-    const { gameId, players } = this.data
+    const { gameId } = this.data
 
     const game = app.globalData.games.find(g => g.id === gameId)
     if (!game) return
 
+    // finalScores 必须从已保存的轮次数据计算，不能用 players.total
+    // players.total 可能包含未保存轮次的分数，导致数据不一致
+    const finalScores = game.players.map(p => {
+      let total = 0
+      game.rounds.forEach(round => {
+        const playerScores = round.scores.filter(s => s.playerId === p.id)
+        if (playerScores.length > 0) {
+          total += playerScores.reduce((sum, s) => sum + s.score, 0)
+        }
+      })
+      return {
+        playerId: p.id,
+        playerName: p.name,
+        total
+      }
+    })
+
     game.status = 'ended'
     game.endTime = new Date().toISOString()
-    game.finalScores = players.map(p => ({
-      playerId: p.id,
-      playerName: p.name,
-      total: p.total
-    }))
+    game.finalScores = finalScores
 
     app.saveGames()
     wx.redirectTo({
@@ -381,6 +399,14 @@ Page({
     return {
       title: '胡乐 - 打牌记分',
       path: '/pages/index/index'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '胡乐麻 - 打牌记分小程序',
+      query: ''
     }
   }
 })

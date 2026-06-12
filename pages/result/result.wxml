@@ -1,5 +1,17 @@
 <!-- 结算页 -->
-<view class="container">
+
+<!-- 未找到牌局数据（分享到其他设备） -->
+<view wx:if="{{gameNotFound}}" class="container">
+  <view class="not-found-section">
+    <view class="not-found-icon">🎴</view>
+    <view class="not-found-title">该牌局数据仅限原设备查看</view>
+    <view class="not-found-desc">胡乐麻使用本地存储，战绩仅保存在打牌的那部手机上哦</view>
+    <button class="btn-back-home" bindtap="onGoHome">返回首页</button>
+  </view>
+</view>
+
+<!-- 正常结算内容 -->
+<view wx:else class="container">
   <!-- 胜利横幅 -->
   <view class="victory-banner">
     <view class="victory-emoji">🏆</view>
@@ -18,7 +30,7 @@
         <text wx:elif="{{index === 2}}">🥉</text>
         <text wx:else>{{index + 1}}</text>
       </view>
-      <view class="rank-avatar" style="background: {{playerColors[item.originalIndex]}}15; color: {{playerColors[item.originalIndex]}}">
+      <view class="rank-avatar" style="background: rgba(255,255,255,0.85); color: {{playerColors[item.originalIndex]}}">
         {{item.playerName[0]}}
       </view>
       <view class="rank-info">
@@ -63,7 +75,7 @@
       <view class="ps-grid">
         <view class="ps-item">
           <text class="ps-value">{{item.winRounds}}/{{roundCount}}</text>
-          <text class="ps-label">📊 胜率 {{roundCount > 0 ? Math.round(item.winRounds / roundCount * 100) : 0}}%</text>
+          <text class="ps-label">胜率 {{item.winRate}}%</text>
         </view>
         <view class="ps-item">
           <text class="ps-value">{{item.avgScore > 0 ? '+' : ''}}{{item.avgScore}}</text>
