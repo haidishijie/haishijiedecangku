@@ -366,71 +366,6 @@ Page({
     }
   },
 
-  // 自动保存到本地相册（供分享卡片 + 我的-战绩相册用）
-  async autoSaveToAlbum() {
-    try {
-      const tempPath = await this.renderResultImage()
-
-      // 持久化保存到应用本地目录
-      const fs = wx.getFileSystemManager()
-      const albumDir = wx.env.USER_DATA_PATH + '/album'
-      // 创建目录（兼容不同版本微信）
-      try {
-        fs.mkdirSync(albumDir)
-      } catch (e) {
-        try { fs.mkdirSync(albumDir, true) } catch (e2) {}
-      }
-
-      const { gameId, rankings, playerCount, roundCount } = this.data
-      const savedPath = albumDir + '/' + gameId + '.png'
-
-      // 先删除旧文件再复制
-      try { fs.unlinkSync(savedPath) } catch (e) {}
-      fs.copyFileSync(tempPath, savedPath)
-
-      // 验证文件是否写入成功
-      try { fs.accessSync(savedPath) } catch (e) {
-        throw new Error('文件写入失败')
-      }
-
-      // 保存到分享图片路径
-      this.setData({ shareImagePath: savedPath })
-
-      // 更新相册元数据
-      const albums = wx.getStorageSync('resultAlbum') || []
-      const winner = rankings[0]
-      const existingIndex = albums.findIndex(a => a.gameId === gameId)
-      const entry = {
-        gameId,
-        savedPath,
-        winner: winner?.playerName || '--',
-        playerCount,
-        roundCount,
-        date: new Date().toISOString(),
-        summary: `${winner?.playerName || '--'}在${playerCount}人局中获胜`,
-        hasMahjongStats: true
-      }
-
-      if (existingIndex >= 0) {
-        albums[existingIndex] = entry
-      } else {
-        albums.unshift(entry) // 最新的放最前面
-      }
-      wx.setStorageSync('resultAlbum', albums)
-
-      // 成功提示
-      console.log('战绩图已存入本地相册:', savedPath)
-    } catch (err) {
-      console.log('autoSaveToAlbum 失败:', err)
-      // 提示用户手动保存
-      wx.showToast({
-        title: '战绩图保存失败，可点底部按钮手动保存',
-        icon: 'none',
-        duration: 2000
-      })
-    }
-  },
-
   // 绘制圆角矩形
   roundRect(ctx, x, y, w, h, r) {
     ctx.beginPath()
@@ -458,25 +393,23 @@ Page({
 
   // 分享给朋友
   onShareAppMessage() {
-    const { rankings, roundCount, playerCount, gameId, shareImagePath } = this.data
+    const { rankings, roundCount, playerCount, gameId } = this.data
     const winner = rankings[0]
 
     return {
       title: `🏆 ${winner?.playerName || '胡乐麻'}在${playerCount}人局中获胜！打了${roundCount}轮`,
-      path: `/pages/result/result?gameId=${gameId}`,
-      imageUrl: shareImagePath || undefined
+      path: `/pages/result/result?gameId=${gameId}`
     }
   },
 
   // 分享到朋友圈
   onShareTimeline() {
-    const { rankings, roundCount, playerCount, gameId, shareImagePath } = this.data
+    const { rankings, roundCount, playerCount, gameId } = this.data
     const winner = rankings[0]
 
     return {
       title: `${winner?.playerName || '胡乐麻'}在${playerCount}人局中获胜！打了${roundCount}轮 - 胡乐麻`,
-      query: `gameId=${gameId}`,
-      imageUrl: shareImagePath || undefined
+      query: `gameId=${gameId}`
     }
   }
 })
