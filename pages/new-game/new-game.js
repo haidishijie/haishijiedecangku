@@ -143,7 +143,8 @@ Page({
       id: generateId(),
       players: this.data.players.map(p => ({
         id: p.id,
-        name: p.name
+        name: p.name,
+        total: 0
       })),
       rounds: [],
       status: 'playing',

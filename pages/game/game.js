@@ -26,6 +26,9 @@ Page({
       menus: ['shareAppMessage', 'shareTimeline']
     })
 
+    // 防止误触返回导致牌局数据丢失
+    wx.enableAlertBeforeUnload()
+
     if (options.gameId) {
       this.initLocalMode(options)
     } else {
@@ -46,8 +49,9 @@ Page({
     const players = game.players.map(p => ({
       id: p.id,
       name: p.name,
-      total: 0,
-      lastRound: 0
+      total: p.total || 0,
+      lastRound: p.lastRound || 0,
+      roundPending: 0
     }))
 
     // 获取最近4轮历史
@@ -309,14 +313,18 @@ Page({
     }
 
     game.rounds.push(round)
-    app.saveGames()
 
     const newPlayers = players.map(p => {
       const lastRoundScore = currentRoundScores
         .filter(s => s.playerId === p.id)
         .reduce((sum, s) => sum + s.score, 0)
+      // total 已在 onQuickScore 中实时更新，这里只设 lastRound 和 roundPending
       return { ...p, lastRound: lastRoundScore, roundPending: 0 }
     })
+
+    // 同步更新 game.players（保持 globalData 一致）
+    game.players = newPlayers
+    app.saveGames()
 
     // 更新历史轮次（最近4轮）
     const roundHistory = game.rounds.slice(-4).reverse().map(r => ({
