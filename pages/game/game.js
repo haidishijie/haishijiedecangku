@@ -30,6 +30,8 @@ Page({
     wx.enableAlertBeforeUnload()
 
     if (options.gameId) {
+      // 标记当前活跃牌局（冷启动恢复用）
+      wx.setStorageSync('activeGameId', options.gameId)
       this.initLocalMode(options)
     } else {
       wx.showToast({ title: '参数错误', icon: 'none' })
@@ -41,18 +43,23 @@ Page({
     this._persistPendingState()
   },
 
-  // 持久化当前轮次暂存数据（每次记分都调用，防被杀丢数据）
+  // 每次记分都持久化暂存数据（防 app 被杀丢数据）
+  // ★ 关键修复：始终保存，即使 currentRoundScores 为空（确认本轮后到下次记分之间也要保留状态）
   _persistPendingState() {
     const { gameId, currentRoundScores, currentRound, players } = this.data
-    if (!gameId || !currentRoundScores || currentRoundScores.length === 0) return
+    if (!gameId) return
 
     const game = app.globalData.games.find(g => g.id === gameId)
     if (game) {
       game._pendingRound = {
         currentRound,
-        currentRoundScores,
-        players
+        currentRoundScores: currentRoundScores || [],
+        players: players || []
       }
+      // 清理可能残留的 _prompted（不写入 storage）
+      delete game._prompted
+      // 记录最后活动时间
+      game.lastActivity = new Date().toISOString()
       app.saveGames()
     }
   },
@@ -68,6 +75,7 @@ Page({
       return
     }
 
+    // 从后台恢复：读取暂存数据
     const game = app.globalData.games.find(g => g.id === gameId)
     if (game && game._pendingRound) {
       const { currentRound, currentRoundScores, players } = game._pendingRound
@@ -98,14 +106,17 @@ Page({
     let currentRoundScores
 
     if (hasPending) {
-      // 恢复暂存数据
+      // 恢复暂存数据（包括本轮未确认的记分和玩家总分）
       players = pending.players
       currentRound = pending.currentRound
       currentRoundScores = pending.currentRoundScores
       // 清除暂存（避免下次还恢复）
       delete game._pendingRound
       app.saveGames()
+
+      wx.showToast({ title: '已恢复上次记分 📝', icon: 'none', duration: 2000 })
     } else {
+      // 正常初始化：从已保存轮次恢复
       players = game.players.map(p => ({
         id: p.id,
         name: p.name,
@@ -115,7 +126,15 @@ Page({
       }))
       currentRound = game.rounds.length + 1
       currentRoundScores = []
+
+      // 如果有暂存但没分数（确认本轮后杀后台的场景），确保恢复正确的 round 编号
+      if (pending && pending.currentRound) {
+        currentRound = pending.currentRound
+      }
     }
+
+    // 清理残留
+    delete game._prompted
 
     // 获取最近4轮历史
     const roundHistory = game.rounds.slice(-4).reverse().map(round => ({
@@ -132,6 +151,9 @@ Page({
       selectedIndex: -1,
       roundHistory
     })
+
+    // 初始化后立即保存一次状态（确保 activeGameId + _pendingRound 都写入 storage）
+    this._persistPendingState()
   },
 
   // ========== 快速输入 ==========
@@ -180,7 +202,6 @@ Page({
     }
 
     // 方式2: 按名字匹配 (小明加5, 阿呆减3)
-    // 注意：两种模式合并，不再串行fallback，支持混合输入如"1加5小明减3"
     players.forEach((player, playerIndex) => {
       const escapedName = player.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
       const namePattern = new RegExp(`${escapedName}\\s*([+\\-加减])\\s*(\\d+)`, 'g')
@@ -396,7 +417,9 @@ Page({
     game.players = newPlayers
     // 清除暂存的本轮数据（已保存）
     delete game._pendingRound
-    // 记录最后活动时间（用于冷启动恢复检测）
+    // 清理残留
+    delete game._prompted
+    // 记录最后活动时间
     game.lastActivity = new Date().toISOString()
     app.saveGames()
 
@@ -417,6 +440,9 @@ Page({
       quickInput: '',
       roundHistory
     })
+
+    // ★ 确认本轮后立即保存一次状态（确保下次冷启动能检测到活跃牌局）
+    this._persistPendingState()
   },
 
   // ========== 结束牌局 ==========
@@ -451,7 +477,6 @@ Page({
     if (!game) return
 
     // finalScores 必须从已保存的轮次数据计算，不能用 players.total
-    // players.total 可能包含未保存轮次的分数，导致数据不一致
     const finalScores = game.players.map(p => {
       let total = 0
       game.rounds.forEach(round => {
@@ -471,6 +496,14 @@ Page({
     game.endTime = new Date().toISOString()
     game.finalScores = finalScores
     delete game._pendingRound
+    delete game._prompted
+
+    // ★ 清除活跃牌局标记
+    wx.removeStorageSync('activeGameId')
+    // 清除未完成牌局标记
+    if (app.globalData._unfinishedGame === game) {
+      app.globalData._unfinishedGame = null
+    }
 
     app.saveGames()
     wx.redirectTo({

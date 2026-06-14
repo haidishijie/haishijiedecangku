@@ -158,6 +158,9 @@ Page({
     app.globalData.games.unshift(game)
     app.saveGames()
 
+    // ★ 标记活跃牌局（冷启动恢复用）
+    wx.setStorageSync('activeGameId', game.id)
+
     // 设置当前用户（第一个玩家）
     if (!app.globalData.currentUser) {
       app.globalData.currentUser = {

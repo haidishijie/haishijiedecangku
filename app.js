@@ -23,14 +23,121 @@ App({
       this.saveCurrentUser()
     }
 
+    // 清理历史残留的 _prompted（旧版本 bug 写进了 storage）
+    this.globalData.games.forEach(g => {
+      delete g._prompted
+    })
+
     // 检测未完成的牌局（冷启动恢复用）
     this.detectUnfinishedGame()
   },
 
   // 检测是否有未完成的牌局
   detectUnfinishedGame() {
-    const game = this.globalData.games.find(g => g.status === 'playing' && g.rounds && g.rounds.length > 0)
-    this.globalData._unfinishedGame = game || null
+    // 优先用 activeGameId 快速定位（更可靠）
+    const activeGameId = wx.getStorageSync('activeGameId')
+    if (activeGameId) {
+      const game = this.globalData.games.find(g => g.id === activeGameId && g.status === 'playing')
+      if (game) {
+        this.globalData._unfinishedGame = game
+        // 延迟弹窗，等页面渲染完成
+        setTimeout(() => this.promptUnfinishedGame(), 600)
+        return
+      }
+      // activeGameId 存在但牌局已结束 → 清理
+      wx.removeStorageSync('activeGameId')
+    }
+
+    // 降级：搜索所有 status=playing 的牌局
+    const game = this.globalData.games.find(g => g.status === 'playing')
+    if (game) {
+      this.globalData._unfinishedGame = game
+      wx.setStorageSync('activeGameId', game.id)
+      setTimeout(() => this.promptUnfinishedGame(), 600)
+    }
+  },
+
+  // 弹窗提示用户继续未完成牌局
+  promptUnfinishedGame() {
+    const game = this.globalData._unfinishedGame
+    if (!game) return
+
+    // 防止同一 session 重复弹窗（用 globalData 级变量，不写入 storage）
+    if (this.globalData._unfinishedPrompted) return
+    this.globalData._unfinishedPrompted = true
+
+    const players = game.players.map(p => p.name).join('、')
+    const confirmedRounds = game.rounds ? game.rounds.length : 0
+    const hasPending = game._pendingRound && game._pendingRound.currentRoundScores &&
+      game._pendingRound.currentRoundScores.length > 0
+    const lastTime = game.lastActivity ? this._formatActivityTime(game.lastActivity) : ''
+
+    let content = `${players}\n已确认 ${confirmedRounds} 轮`
+    if (hasPending) {
+      content += `\n（还有 ${game._pendingRound.currentRoundScores.length} 笔未确认的记分）`
+    }
+    if (lastTime) {
+      content += `\n最后于 ${lastTime}`
+    }
+    content += '\n\n是否继续？'
+
+    wx.showModal({
+      title: '有未完成的牌局',
+      content: content,
+      confirmText: '继续牌局',
+      cancelText: '结束并存档',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({
+            url: `/pages/game/game?gameId=${game.id}`
+          })
+        } else {
+          this._endUnfinishedGame(game)
+        }
+      }
+    })
+  },
+
+  // 格式化活动时间
+  _formatActivityTime(isoStr) {
+    try {
+      const d = new Date(isoStr)
+      const month = d.getMonth() + 1
+      const day = d.getDate()
+      const hour = d.getHours().toString().padStart(2, '0')
+      const minute = d.getMinutes().toString().padStart(2, '0')
+      return `${month}月${day}日 ${hour}:${minute}`
+    } catch (e) {
+      return ''
+    }
+  },
+
+  // 结束未完成牌局（用户选择"结束并存档"）
+  _endUnfinishedGame(game) {
+    // 从已保存轮次计算最终分数
+    const finalScores = game.players.map(p => {
+      let total = 0
+      game.rounds.forEach(round => {
+        const ps = round.scores.filter(s => s.playerId === p.id)
+        if (ps.length > 0) total += ps.reduce((sum, s) => sum + s.score, 0)
+      })
+      return { playerId: p.id, playerName: p.name, total }
+    })
+
+    game.status = 'ended'
+    game.endTime = new Date().toISOString()
+    game.finalScores = finalScores
+    delete game._pendingRound
+    delete game._prompted
+
+    // 清除全局未完成标记
+    if (this.globalData._unfinishedGame === game) {
+      this.globalData._unfinishedGame = null
+    }
+    wx.removeStorageSync('activeGameId')
+    this.saveGames()
+
+    wx.showToast({ title: '已存档', icon: 'none' })
   },
 
   // 保存数据到本地存储（带异常处理）
@@ -62,7 +169,7 @@ App({
   getStats() {
     const games = this.globalData.games
       .filter(g => g.status === 'ended')
-      .sort((a, b) => new Date(a.endTime) - new Date(b.endTime)) // 按时间排序
+      .sort((a, b) => new Date(a.endTime) - new Date(b.endTime))
     const currentUser = this.globalData.currentUser
 
     if (!currentUser || games.length === 0) {
@@ -76,7 +183,7 @@ App({
     let totalScore = 0
 
     games.forEach(game => {
-      const myScore = game.finalScores?.find(s => s.playerId === currentUser.id)
+      const myScore = game.finalScores && game.finalScores.find(s => s.playerId === currentUser.id)
       if (myScore) {
         totalScore += myScore.total
         if (myScore.total > 0) {
@@ -84,7 +191,6 @@ App({
           currentStreak++
           maxWinStreak = Math.max(maxWinStreak, currentStreak)
         } else {
-          // 平局或输都重置连胜
           currentStreak = 0
         }
       }
@@ -116,7 +222,7 @@ App({
     let totalScore = 0
 
     games.forEach(game => {
-      const score = game.finalScores?.find(s => s.playerId === playerId)
+      const score = game.finalScores && game.finalScores.find(s => s.playerId === playerId)
       if (score) {
         totalGames++
         totalScore += score.total
@@ -157,6 +263,8 @@ App({
   globalData: {
     games: [],         // 本地牌局记录
     players: [],       // 牌友列表
-    currentUser: null  // 当前用户信息
+    currentUser: null, // 当前用户信息
+    _unfinishedGame: null,       // 未完成牌局（内存中，不写入 storage）
+    _unfinishedPrompted: false   // 本 session 是否已弹过提示（内存中）
   }
 })
