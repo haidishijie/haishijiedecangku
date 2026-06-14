@@ -92,10 +92,10 @@
 
     <view wx:if="{{showHistory && history.length > 0}}" class="history-list">
       <view wx:for="{{history}}" wx:key="time" class="history-item">
-        <view class="history-result" style="background: {{prizes[0]?.color || '#FF6B9D'}}20">
+        <view class="history-result" style="background: {{prizeColor}}20">
           {{item.result}}
         </view>
-        <view class="history-time">{{item.time}}</view>
+        <view class="history-time">{{item.timeStr}}</view>
       </view>
       <view class="btn-clear" bindtap="onClearHistory">清空历史</view>
     </view>

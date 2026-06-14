@@ -8,7 +8,8 @@ Page({
     showResult: false,
     history: [],          // 历史记录
     showHistory: false,
-    canvasReady: false
+    canvasReady: false,
+    prizeColor: '#FF6B9D' // 第一个奖品颜色（历史记录用）
   },
 
   // 转盘颜色
@@ -77,7 +78,7 @@ Page({
       name,
       color: this.colors[this.data.prizes.length % this.colors.length]
     }]
-    this.setData({ prizes, inputName: '' })
+    this.setData({ prizes, inputName: '', prizeColor: prizes[0].color })
     this.drawWheel()
   },
 
@@ -86,7 +87,7 @@ Page({
     const prizes = this.data.prizes.filter((_, i) => i !== index)
     // 重新分配颜色
     prizes.forEach((p, i) => { p.color = this.colors[i % this.colors.length] })
-    this.setData({ prizes })
+    this.setData({ prizes, prizeColor: prizes.length > 0 ? prizes[0].color : '#FF6B9D' })
     this.drawWheel()
   },
 
@@ -250,9 +251,13 @@ Page({
 
   saveHistory(prizeName) {
     const history = wx.getStorageSync('wheelHistory') || []
+    const now = new Date()
+    const pad = n => String(n).padStart(2, '0')
+    const timeStr = `${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}`
     history.unshift({
       result: prizeName,
-      time: new Date().toISOString(),
+      time: now.toISOString(),
+      timeStr: timeStr,
       prizes: this.data.prizes.map(p => p.name)
     })
     // 最多保留50条
@@ -263,6 +268,14 @@ Page({
 
   loadHistory() {
     const history = wx.getStorageSync('wheelHistory') || []
+    // 给旧数据补 timeStr
+    history.forEach(h => {
+      if (!h.timeStr && h.time) {
+        const d = new Date(h.time)
+        const pad = n => String(n).padStart(2, '0')
+        h.timeStr = `${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+      }
+    })
     this.setData({ history })
   },
 
@@ -296,7 +309,7 @@ Page({
       name,
       color: this.colors[this.data.prizes.length % this.colors.length]
     }]
-    this.setData({ prizes })
+    this.setData({ prizes, prizeColor: prizes[0].color })
     this.drawWheel()
   }
 })
