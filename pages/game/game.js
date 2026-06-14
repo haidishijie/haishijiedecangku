@@ -36,6 +36,44 @@ Page({
     }
   },
 
+  // 页面切到后台时保存当前轮次（防止微信消息切换导致数据丢失）
+  onHide() {
+    const { gameId, currentRoundScores, currentRound, players } = this.data
+    if (!gameId || currentRoundScores.length === 0) return
+
+    const game = app.globalData.games.find(g => g.id === gameId)
+    if (game) {
+      game._pendingRound = {
+        currentRound,
+        currentRoundScores,
+        players
+      }
+      app.saveGames()
+    }
+  },
+
+  // 页面恢复时还原当前轮次
+  onShow() {
+    const { gameId } = this.data
+    if (!gameId) return
+
+    // 非首次加载（onLoad 已初始化）
+    if (!this._initialized) {
+      this._initialized = true
+      return
+    }
+
+    const game = app.globalData.games.find(g => g.id === gameId)
+    if (game && game._pendingRound) {
+      const { currentRound, currentRoundScores, players } = game._pendingRound
+      this.setData({
+        currentRound,
+        currentRoundScores,
+        players
+      })
+    }
+  },
+
   // ========== 初始化 ==========
 
   initLocalMode(options) {
@@ -324,6 +362,8 @@ Page({
 
     // 同步更新 game.players（保持 globalData 一致）
     game.players = newPlayers
+    // 清除暂存的本轮数据（已保存）
+    delete game._pendingRound
     app.saveGames()
 
     // 更新历史轮次（最近4轮）
@@ -396,6 +436,7 @@ Page({
     game.status = 'ended'
     game.endTime = new Date().toISOString()
     game.finalScores = finalScores
+    delete game._pendingRound
 
     app.saveGames()
     wx.redirectTo({
