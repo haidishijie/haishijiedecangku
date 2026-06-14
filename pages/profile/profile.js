@@ -223,34 +223,95 @@ Page({
     })
   },
 
-  // 保存备份文件到本地
+  // 导出 Excel（CSV 格式，Excel 可直接打开）
   onExportFile() {
-    const data = this._packExportData()
-    if (!data) return
+    const games = app.globalData.games
+    if (!games || games.length === 0) {
+      wx.showToast({ title: '还没有牌局数据可导出', icon: 'none' })
+      return
+    }
 
-    const fs = wx.getFileSystemManager()
-    const fileName = `hule-backup-${this._formatDate(new Date())}.json`
+    const endedGames = games.filter(g => g.status === 'ended')
+    if (endedGames.length === 0) {
+      wx.showToast({ title: '还没有已结束的牌局', icon: 'none' })
+      return
+    }
+
+    // BOM + CSV 内容（Excel 打开中文不乱码）
+    const BOM = '\uFEFF'
+    const lines = []
+
+    // 表头：牌局汇总
+    lines.push('=== 牌局汇总 ===')
+    lines.push('日期,时间,人数,轮数,玩家1,分数1,玩家2,分数2,玩家3,分数3,玩家4,分数4,赢家')
+
+    endedGames.forEach(game => {
+      const d = new Date(game.endTime || game.startTime)
+      const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+      const time = `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+      const players = game.players || []
+      const scores = game.finalScores || []
+      const sorted = [...scores].sort((a, b) => b.total - a.total)
+      const winner = sorted[0]?.playerName || ''
+
+      const cols = [date, time, players.length, game.rounds?.length || 0]
+      // 最多4个玩家的分数
+      for (let i = 0; i < 4; i++) {
+        if (sorted[i]) {
+          cols.push(sorted[i].playerName, sorted[i].total)
+        } else {
+          cols.push('', '')
+        }
+      }
+      cols.push(winner)
+
+      lines.push(cols.join(','))
+    })
+
+    // 空行分隔
+    lines.push('')
+    lines.push('=== 逐轮详情 ===')
+    lines.push('牌局日期,轮次,玩家,分数')
+
+    endedGames.forEach(game => {
+      const d = new Date(game.endTime || game.startTime)
+      const date = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+      ;(game.rounds || []).forEach(round => {
+        // 同一轮同一玩家的分数汇总
+        const playerTotals = {}
+        ;(round.scores || []).forEach(s => {
+          playerTotals[s.playerName] = (playerTotals[s.playerName] || 0) + s.score
+        })
+        Object.entries(playerTotals).forEach(([name, score]) => {
+          lines.push(`${date},第${round.roundNumber}轮,${name},${score}`)
+        })
+      })
+    })
+
+    const csv = BOM + lines.join('\n')
+    const fileName = `胡乐战绩-${this._formatDate(new Date())}.csv`
     const filePath = wx.env.USER_DATA_PATH + '/' + fileName
 
     try {
-      fs.writeFileSync(filePath, data, 'utf8')
+      const fs = wx.getFileSystemManager()
+      fs.writeFileSync(filePath, csv, 'utf8')
 
-      // 尝试分享文件，失败则回退到剪贴板
       wx.shareFileMessage({
         filePath: filePath,
         fileName: fileName,
         success: () => {
-          wx.showToast({ title: '分享成功', icon: 'none' })
+          wx.showToast({ title: '分享成功，用 Excel 打开即可', icon: 'none', duration: 2000 })
         },
         fail: (err) => {
           if (err.errMsg && err.errMsg.includes('cancel')) return
           // 分享失败，回退到剪贴板
           wx.setClipboardData({
-            data: data,
+            data: csv,
             success: () => {
               wx.showModal({
                 title: '文件分享不可用',
-                content: '已改为复制到剪贴板，粘贴到微信聊天或备忘录即可保存。',
+                content: '已改为复制到剪贴板，打开 Excel 粘贴即可。',
                 showCancel: false,
                 confirmText: '知道了'
               })
@@ -259,7 +320,7 @@ Page({
         }
       })
     } catch (err) {
-      wx.showToast({ title: '保存失败: ' + err.errMsg, icon: 'none' })
+      wx.showToast({ title: '导出失败: ' + (err.errMsg || err.message), icon: 'none' })
     }
   },
 

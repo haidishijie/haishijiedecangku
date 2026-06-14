@@ -94,7 +94,7 @@
       <view class="setting-arrow">›</view>
     </view>
     <view class="setting-item" bindtap="onExportFile">
-      <view class="setting-label">💾 保存备份文件</view>
+      <view class="setting-label">📊 导出 Excel 表格</view>
       <view class="setting-arrow">›</view>
     </view>
     <view class="setting-item" bindtap="onImportData">
