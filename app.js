@@ -28,38 +28,29 @@ App({
 
   _detectUnfinished() {
     try {
+      var gl = this.globalData
       var activeGameId = wx.getStorageSync('activeGameId')
+      var gameList = gl.games || []
+
       if (activeGameId) {
-        var games = this.globalData.games
-        var game = null
-        for (var i = 0; i < games.length; i++) {
-          if (games[i].id === activeGameId && games[i].status === 'playing') {
-            game = games[i]
-            break
+        for (var i = 0; i < gameList.length; i++) {
+          if (gameList[i].id === activeGameId && gameList[i].status === 'playing') {
+            gl._unfinishedGame = gameList[i]
+            return
           }
-        }
-        if (game) {
-          this.globalData._unfinishedGame = game
-          return
         }
         wx.removeStorageSync('activeGameId')
       }
 
-      // 降级搜索
-      var games = this.globalData.games
-      var found = null
-      for (var i = 0; i < games.length; i++) {
-        if (games[i].status === 'playing') {
-          found = games[i]
-          break
+      // 降级：搜索所有 playing 的牌局
+      for (var j = 0; j < gameList.length; j++) {
+        if (gameList[j].status === 'playing') {
+          gl._unfinishedGame = gameList[j]
+          wx.setStorageSync('activeGameId', gameList[j].id)
+          return
         }
       }
-      if (found) {
-        this.globalData._unfinishedGame = found
-        wx.setStorageSync('activeGameId', found.id)
-      } else {
-        this.globalData._unfinishedGame = null
-      }
+      gl._unfinishedGame = null
     } catch (e) {
       console.error('_detectUnfinished error:', e)
       this.globalData._unfinishedGame = null

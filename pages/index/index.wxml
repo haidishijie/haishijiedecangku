@@ -9,11 +9,11 @@
 
   <!-- 快速开局按钮 -->
   <view class="action-section">
-    <button class="btn-start" bindtap="onStartGame">
+    <button class="btn-start" bindtap="onStartGame" open-type="">
       <text class="btn-icon">🀄</text>
       <text class="btn-text">快速开局</text>
     </button>
-    <button class="btn-start btn-start-second" bindtap="onStartGameUnlimited">
+    <button class="btn-start btn-start-second" bindtap="onStartGameUnlimited" open-type="">
       <text class="btn-icon">🃏</text>
       <text class="btn-text">快速开局</text>
     </button>
