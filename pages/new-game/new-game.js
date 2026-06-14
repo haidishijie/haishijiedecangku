@@ -14,6 +14,30 @@ Page({
   },
 
   onLoad(options) {
+    // ★ 先检查是否有未完成的牌局
+    if (app.globalData._unfinishedGame) {
+      const game = app.globalData._unfinishedGame
+      const players = game.players.map(p => p.name).join('、')
+      const confirmedRounds = game.rounds ? game.rounds.length : 0
+
+      wx.showModal({
+        title: '有未完成的牌局',
+        content: `${players}\n已确认 ${confirmedRounds} 轮\n\n是否继续上一局？`,
+        confirmText: '继续牌局',
+        cancelText: '开新局',
+        success: (res) => {
+          if (res.confirm) {
+            wx.redirectTo({
+              url: `/pages/game/game?gameId=${game.id}`
+            })
+          } else {
+            app._endUnfinishedGame(game)
+            // 继续留在 new-game 页面
+          }
+        }
+      })
+    }
+
     const currentUser = app.globalData.currentUser
     const unlimited = options.unlimited === '1'
     const maxPlayers = unlimited ? 8 : 4

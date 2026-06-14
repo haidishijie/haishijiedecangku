@@ -70,6 +70,11 @@ App({
     if (this.globalData._unfinishedPrompted) return
     this.globalData._unfinishedPrompted = true
 
+    this._showResumeModal(game)
+  },
+
+  // 统一的弹窗逻辑（多处复用）
+  _showResumeModal(game) {
     const players = game.players.map(p => p.name).join('、')
     const confirmedRounds = game.rounds ? game.rounds.length : 0
     const hasPending = game._pendingRound && game._pendingRound.currentRoundScores &&
