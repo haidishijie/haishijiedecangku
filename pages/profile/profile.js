@@ -208,5 +208,165 @@ Page({
     wx.navigateTo({
       url: '/pages/history/history'
     })
+  },
+
+  // ========== 数据导出/导入 ==========
+
+  // 导出数据到剪贴板
+  onExportClipboard() {
+    const data = this._packExportData()
+    if (!data) return
+
+    wx.setClipboardData({
+      data: data,
+      success: () => {
+        wx.showToast({ title: '已复制到剪贴板，粘贴发送即可', icon: 'none', duration: 3000 })
+      }
+    })
+  },
+
+  // 保存备份文件到本地
+  onExportFile() {
+    const data = this._packExportData()
+    if (!data) return
+
+    const fs = wx.getFileSystemManager()
+    const fileName = `hule-backup-${this._formatDate(new Date())}.json`
+    const filePath = wx.env.USER_DATA_PATH + '/' + fileName
+
+    try {
+      fs.writeFileSync(filePath, data, 'utf8')
+      wx.showModal({
+        title: '备份文件已保存',
+        content: `文件名：${fileName}\n\n可通过微信「文件传输助手」发送给自己备份`,
+        confirmText: '分享文件',
+        cancelText: '知道了',
+        success: (res) => {
+          if (res.confirm) {
+            wx.shareFileMessage({
+              filePath: filePath,
+              fileName: fileName,
+              success: () => {},
+              fail: (err) => {
+                if (!err.errMsg.includes('cancel')) {
+                  wx.showToast({ title: '分享失败', icon: 'none' })
+                }
+              }
+            })
+          }
+        }
+      })
+    } catch (err) {
+      wx.showToast({ title: '保存失败: ' + err.errMsg, icon: 'none' })
+    }
+  },
+
+  // 从剪贴板导入数据
+  onImportData() {
+    wx.getClipboardData({
+      success: (res) => {
+        const text = res.data
+        if (!text || !text.trim()) {
+          wx.showToast({ title: '剪贴板为空', icon: 'none' })
+          return
+        }
+
+        try {
+          const parsed = JSON.parse(text)
+
+          // 验证数据格式
+          if (!parsed.games || !Array.isArray(parsed.games)) {
+            wx.showToast({ title: '数据格式不对，需要胡乐导出的数据', icon: 'none' })
+            return
+          }
+
+          // 统计导入信息
+          const importGames = parsed.games.length
+          const importPlayers = parsed.players ? parsed.players.length : 0
+
+          wx.showModal({
+            title: '确认导入',
+            content: `将导入 ${importGames} 场牌局、${importPlayers} 个牌友。\n\n已有数据会被合并（同ID不重复）。`,
+            confirmText: '导入',
+            cancelText: '取消',
+            success: (r) => {
+              if (r.confirm) {
+                this._mergeImportData(parsed)
+                wx.showToast({ title: '导入成功 ✅', icon: 'none' })
+                this.loadProfile()
+              }
+            }
+          })
+        } catch (e) {
+          wx.showToast({ title: '剪贴板内容不是胡乐备份数据', icon: 'none' })
+        }
+      }
+    })
+  },
+
+  // 打包导出数据
+  _packExportData() {
+    const games = app.globalData.games
+    const players = app.globalData.players
+    const currentUser = app.globalData.currentUser
+
+    if (!games || games.length === 0) {
+      wx.showToast({ title: '还没有牌局数据可导出', icon: 'none' })
+      return null
+    }
+
+    const exportObj = {
+      app: 'hule-mahjong',
+      version: '1.0.0',
+      exportTime: new Date().toISOString(),
+      deviceInfo: {
+        model: wx.getSystemInfoSync().model,
+        system: wx.getSystemInfoSync().system
+      },
+      currentUser: currentUser,
+      players: players,
+      games: games
+    }
+
+    return JSON.stringify(exportObj, null, 2)
+  },
+
+  // 合并导入数据（同ID不重复）
+  _mergeImportData(imported) {
+    // 合并牌友
+    if (imported.players && Array.isArray(imported.players)) {
+      const existingPlayerIds = new Set(app.globalData.players.map(p => p.id))
+      imported.players.forEach(p => {
+        if (!existingPlayerIds.has(p.id)) {
+          app.globalData.players.push(p)
+        }
+      })
+      app.savePlayers()
+    }
+
+    // 合并牌局
+    const existingGameIds = new Set(app.globalData.games.map(g => g.id))
+    imported.games.forEach(g => {
+      if (!existingGameIds.has(g.id)) {
+        app.globalData.games.push(g)
+      }
+    })
+    app.saveGames()
+
+    // 合并用户信息（保留现有的，只补充缺失字段）
+    if (imported.currentUser) {
+      const current = app.globalData.currentUser || {}
+      app.globalData.currentUser = {
+        ...imported.currentUser,
+        ...current  // 现有数据优先
+      }
+      app.saveCurrentUser()
+    }
+  },
+
+  // 格式化日期（文件名用）
+  _formatDate(d) {
+    const pad = n => String(n).padStart(2, '0')
+    return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`
   }
 })
