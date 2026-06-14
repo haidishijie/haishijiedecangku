@@ -364,6 +364,8 @@ Page({
     game.players = newPlayers
     // 清除暂存的本轮数据（已保存）
     delete game._pendingRound
+    // 记录最后活动时间（用于冷启动恢复检测）
+    game.lastActivity = new Date().toISOString()
     app.saveGames()
 
     // 更新历史轮次（最近4轮）

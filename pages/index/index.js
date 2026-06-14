@@ -23,6 +23,9 @@ Page({
     const theme = themeUtil.getCurrentTheme()
     this.setData({ themeClass: theme.className })
     this.loadData()
+
+    // 检测未完成的牌局（仅在冷启动后的第一次 onShow）
+    this.checkUnfinishedGame()
   },
 
   loadData() {
@@ -93,5 +96,57 @@ Page({
     wx.navigateTo({
       url: '/pages/wheel/wheel'
     })
+  },
+
+  // ========== 未完成牌局检测 ==========
+
+  checkUnfinishedGame() {
+    // 只检测一次，避免每次 onShow 都弹窗
+    if (this._checkedUnfinished) return
+    this._checkedUnfinished = true
+
+    const game = app.globalData.games.find(g => g.status === 'playing')
+    if (!game || !game.rounds || game.rounds.length === 0) return
+
+    const players = game.players.map(p => p.name).join('、')
+    const lastRound = game.rounds.length
+    const lastTime = game.lastActivity ? formatDate(game.lastActivity) : ''
+
+    wx.showModal({
+      title: '有未完成的牌局',
+      content: `${players}\n已打 ${lastRound} 轮${lastTime ? '，最后于 ' + lastTime : ''}\n\n是否继续？`,
+      confirmText: '继续牌局',
+      cancelText: '结束并存档',
+      success: (res) => {
+        if (res.confirm) {
+          wx.navigateTo({
+            url: `/pages/game/game?gameId=${game.id}`
+          })
+        } else {
+          this._endUnfinishedGame(game)
+        }
+      }
+    })
+  },
+
+  _endUnfinishedGame(game) {
+    // 从已保存轮次计算最终分数
+    const finalScores = game.players.map(p => {
+      let total = 0
+      game.rounds.forEach(round => {
+        const ps = round.scores.filter(s => s.playerId === p.id)
+        if (ps.length > 0) total += ps.reduce((sum, s) => sum + s.score, 0)
+      })
+      return { playerId: p.id, playerName: p.name, total }
+    })
+
+    game.status = 'ended'
+    game.endTime = new Date().toISOString()
+    game.finalScores = finalScores
+    delete game._pendingRound
+    app.saveGames()
+
+    wx.showToast({ title: '已存档', icon: 'none' })
+    this.loadData()
   }
 })
