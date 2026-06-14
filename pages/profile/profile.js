@@ -34,9 +34,6 @@ Page({
     // 加载主题设置
     this.loadTheme()
     this.loadProfile()
-
-    // ★ 检测未完成的牌局
-    app.promptUnfinishedGame()
   },
 
   loadProfile() {

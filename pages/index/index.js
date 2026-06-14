@@ -23,9 +23,6 @@ Page({
     const theme = themeUtil.getCurrentTheme()
     this.setData({ themeClass: theme.className })
     this.loadData()
-
-    // 检测未完成的牌局（切换 tab 时触发，作为 app.onLaunch 的兜底）
-    this.checkUnfinishedGame()
   },
 
   loadData() {
@@ -51,7 +48,7 @@ Page({
   // 快速开局（默认）
   onStartGame() {
     // ★ 先检查是否有未完成的牌局
-    if (this._checkAndResumeUnfinished()) return
+    if (app.checkAndPromptUnfinished()) return
     wx.navigateTo({
       url: '/pages/new-game/new-game'
     })
@@ -60,50 +57,10 @@ Page({
   // 快速开局（无人数上限）
   onStartGameUnlimited() {
     // ★ 先检查是否有未完成的牌局
-    if (this._checkAndResumeUnfinished()) return
+    if (app.checkAndPromptUnfinished()) return
     wx.navigateTo({
       url: '/pages/new-game/new-game?unlimited=1'
     })
-  },
-
-  // 检查并恢复未完成牌局，返回 true 表示拦截了（用户选择继续牌局）
-  _checkAndResumeUnfinished() {
-    const game = app.globalData._unfinishedGame
-    if (!game) return false
-
-    const players = game.players.map(p => p.name).join('、')
-    const confirmedRounds = game.rounds ? game.rounds.length : 0
-    const hasPending = game._pendingRound && game._pendingRound.currentRoundScores &&
-      game._pendingRound.currentRoundScores.length > 0
-    const lastTime = game.lastActivity ? app._formatActivityTime(game.lastActivity) : ''
-
-    let content = `${players}\n已确认 ${confirmedRounds} 轮`
-    if (hasPending) {
-      content += `\n（还有 ${game._pendingRound.currentRoundScores.length} 笔未确认的记分）`
-    }
-    if (lastTime) {
-      content += `\n最后于 ${lastTime}`
-    }
-    content += '\n\n是否继续上一局？'
-
-    wx.showModal({
-      title: '有未完成的牌局',
-      content: content,
-      confirmText: '继续牌局',
-      cancelText: '结束并开新局',
-      success: (res) => {
-        if (res.confirm) {
-          // 继续上一局
-          wx.navigateTo({
-            url: `/pages/game/game?gameId=${game.id}`
-          })
-        } else {
-          // 结束上一局，然后开新局
-          app._endUnfinishedGame(game)
-        }
-      }
-    })
-    return true // 拦截本次操作
   },
 
   // 查看牌局详情
@@ -140,12 +97,5 @@ Page({
     wx.navigateTo({
       url: '/pages/wheel/wheel'
     })
-  },
-
-  // ========== 未完成牌局检测 ==========
-
-  checkUnfinishedGame() {
-    // 委托给 app 统一处理
-    app.promptUnfinishedGame()
   }
 })

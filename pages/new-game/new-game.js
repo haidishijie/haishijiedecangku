@@ -14,28 +14,12 @@ Page({
   },
 
   onLoad(options) {
-    // ★ 先检查是否有未完成的牌局
-    if (app.globalData._unfinishedGame) {
-      const game = app.globalData._unfinishedGame
-      const players = game.players.map(p => p.name).join('、')
-      const confirmedRounds = game.rounds ? game.rounds.length : 0
-
-      wx.showModal({
-        title: '有未完成的牌局',
-        content: `${players}\n已确认 ${confirmedRounds} 轮\n\n是否继续上一局？`,
-        confirmText: '继续牌局',
-        cancelText: '开新局',
-        success: (res) => {
-          if (res.confirm) {
-            wx.redirectTo({
-              url: `/pages/game/game?gameId=${game.id}`
-            })
-          } else {
-            app._endUnfinishedGame(game)
-            // 继续留在 new-game 页面
-          }
-        }
-      })
+    // ★ 先检查是否有未完成的牌局（兜底，正常应该在 index 页按钮就被拦截了）
+    if (app.checkAndPromptUnfinished()) {
+      // 有未完成牌局，弹窗让用户选择
+      // 如果用户选"继续牌局"会自动跳转，选"结束并开新局"会存档
+      // 但这里我们不能 return，因为弹窗是异步的
+      // 如果用户选"结束并开新局"，存档后 this 页面还在
     }
 
     const currentUser = app.globalData.currentUser

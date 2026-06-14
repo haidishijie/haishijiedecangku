@@ -23,9 +23,6 @@ Page({
     const theme = themeUtil.getCurrentTheme()
     this.setData({ themeClass: theme.className })
     this.loadRankings()
-
-    // ★ 检测未完成的牌局（冷启动默认进入此 tab，必须检测）
-    app.promptUnfinishedGame()
   },
 
   // 切换时间范围

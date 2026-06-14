@@ -28,19 +28,16 @@ App({
       delete g._prompted
     })
 
-    // 冷启动检测
+    // 冷启动检测（只设标记，不弹窗）
     this._doDetectUnfinished()
   },
 
-  // 热启动（从后台切回前台）也要检测
+  // 热启动（从后台切回前台）也检测（只设标记，不弹窗）
   onShow() {
-    // 只在未弹过的情况下检测（防止重复弹窗）
-    if (!this.globalData._unfinishedPrompted) {
-      this._doDetectUnfinished()
-    }
+    this._doDetectUnfinished()
   },
 
-  // 统一的检测入口
+  // 统一的检测入口（只负责数据检测，不弹窗）
   _doDetectUnfinished() {
     const activeGameId = wx.getStorageSync('activeGameId')
     if (activeGameId) {
@@ -58,23 +55,18 @@ App({
     if (game) {
       this.globalData._unfinishedGame = game
       wx.setStorageSync('activeGameId', game.id)
+    } else {
+      this.globalData._unfinishedGame = null
     }
   },
 
-  // 弹窗提示用户继续未完成牌局（由各 tabBar 页面在 onShow 中调用）
-  promptUnfinishedGame() {
+  // 检查是否有未完成牌局（供页面按钮调用）
+  // 返回 true 表示有未完成牌局（已弹窗），false 表示没有
+  checkAndPromptUnfinished() {
+    this._doDetectUnfinished() // 确保最新状态
     const game = this.globalData._unfinishedGame
-    if (!game) return
+    if (!game) return false
 
-    // 防止同一 session 重复弹窗（用 globalData 级变量，不写入 storage）
-    if (this.globalData._unfinishedPrompted) return
-    this.globalData._unfinishedPrompted = true
-
-    this._showResumeModal(game)
-  },
-
-  // 统一的弹窗逻辑（多处复用）
-  _showResumeModal(game) {
     const players = game.players.map(p => p.name).join('、')
     const confirmedRounds = game.rounds ? game.rounds.length : 0
     const hasPending = game._pendingRound && game._pendingRound.currentRoundScores &&
@@ -88,13 +80,13 @@ App({
     if (lastTime) {
       content += `\n最后于 ${lastTime}`
     }
-    content += '\n\n是否继续？'
+    content += '\n\n是否继续上一局？'
 
     wx.showModal({
       title: '有未完成的牌局',
       content: content,
       confirmText: '继续牌局',
-      cancelText: '结束并存档',
+      cancelText: '结束并开新局',
       success: (res) => {
         if (res.confirm) {
           wx.navigateTo({
@@ -105,6 +97,7 @@ App({
         }
       }
     })
+    return true
   },
 
   // 格式化活动时间
@@ -121,7 +114,7 @@ App({
     }
   },
 
-  // 结束未完成牌局（用户选择"结束并存档"）
+  // 结束未完成牌局（用户选择"结束并开新局"）
   _endUnfinishedGame(game) {
     // 从已保存轮次计算最终分数
     const finalScores = game.players.map(p => {
@@ -156,6 +149,25 @@ App({
     } catch (err) {
       console.error('保存games失败:', err)
     }
+  },
+
+  // 防抖保存（减少高频写入 storage 的开销）
+  _saveGamesTimer: null,
+  saveGamesDebounced() {
+    if (this._saveGamesTimer) clearTimeout(this._saveGamesTimer)
+    this._saveGamesTimer = setTimeout(() => {
+      this.saveGames()
+      this._saveGamesTimer = null
+    }, 300)
+  },
+
+  // 立即保存（用于 onHide 等必须立即保存的场景）
+  saveGamesImmediate() {
+    if (this._saveGamesTimer) {
+      clearTimeout(this._saveGamesTimer)
+      this._saveGamesTimer = null
+    }
+    this.saveGames()
   },
 
   savePlayers() {
@@ -273,7 +285,6 @@ App({
     games: [],         // 本地牌局记录
     players: [],       // 牌友列表
     currentUser: null, // 当前用户信息
-    _unfinishedGame: null,       // 未完成牌局（内存中，不写入 storage）
-    _unfinishedPrompted: false    // 本 session 是否已弹过提示（内存中）
+    _unfinishedGame: null  // 未完成牌局（内存中，不写入 storage）
   }
 })

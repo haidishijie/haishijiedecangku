@@ -40,12 +40,13 @@ Page({
 
   // 页面切到后台时保存当前轮次（防止微信消息切换导致数据丢失）
   onHide() {
-    this._persistPendingState()
+    this._persistPendingState(true) // 立即保存
   },
 
   // 每次记分都持久化暂存数据（防 app 被杀丢数据）
   // ★ 关键修复：始终保存，即使 currentRoundScores 为空（确认本轮后到下次记分之间也要保留状态）
-  _persistPendingState() {
+  // immediate=true 时立即写 storage（onHide 场景），否则防抖 300ms
+  _persistPendingState(immediate) {
     const { gameId, currentRoundScores, currentRound, players } = this.data
     if (!gameId) return
 
@@ -60,7 +61,12 @@ Page({
       delete game._prompted
       // 记录最后活动时间
       game.lastActivity = new Date().toISOString()
-      app.saveGames()
+
+      if (immediate) {
+        app.saveGamesImmediate()
+      } else {
+        app.saveGamesDebounced()
+      }
     }
   },
 
@@ -153,7 +159,7 @@ Page({
     })
 
     // 初始化后立即保存一次状态（确保 activeGameId + _pendingRound 都写入 storage）
-    this._persistPendingState()
+    this._persistPendingState(true)
   },
 
   // ========== 快速输入 ==========
@@ -442,7 +448,7 @@ Page({
     })
 
     // ★ 确认本轮后立即保存一次状态（确保下次冷启动能检测到活跃牌局）
-    this._persistPendingState()
+    this._persistPendingState(true)
   },
 
   // ========== 结束牌局 ==========
