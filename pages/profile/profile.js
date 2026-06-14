@@ -234,24 +234,28 @@ Page({
 
     try {
       fs.writeFileSync(filePath, data, 'utf8')
-      wx.showModal({
-        title: '备份文件已保存',
-        content: `文件名：${fileName}\n\n可通过微信「文件传输助手」发送给自己备份`,
-        confirmText: '分享文件',
-        cancelText: '知道了',
-        success: (res) => {
-          if (res.confirm) {
-            wx.shareFileMessage({
-              filePath: filePath,
-              fileName: fileName,
-              success: () => {},
-              fail: (err) => {
-                if (!err.errMsg.includes('cancel')) {
-                  wx.showToast({ title: '分享失败', icon: 'none' })
-                }
-              }
-            })
-          }
+
+      // 尝试分享文件，失败则回退到剪贴板
+      wx.shareFileMessage({
+        filePath: filePath,
+        fileName: fileName,
+        success: () => {
+          wx.showToast({ title: '分享成功', icon: 'none' })
+        },
+        fail: (err) => {
+          if (err.errMsg && err.errMsg.includes('cancel')) return
+          // 分享失败，回退到剪贴板
+          wx.setClipboardData({
+            data: data,
+            success: () => {
+              wx.showModal({
+                title: '文件分享不可用',
+                content: '已改为复制到剪贴板，粘贴到微信聊天或备忘录即可保存。',
+                showCancel: false,
+                confirmText: '知道了'
+              })
+            }
+          })
         }
       })
     } catch (err) {
