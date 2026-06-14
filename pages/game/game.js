@@ -38,36 +38,28 @@ Page({
     }
   },
 
-  // 页面切到后台时保存当前轮次（防止微信消息切换导致数据丢失）
+  // 页面切到后台时保存当前轮次
   onHide() {
-    this._persistPendingState(true) // 立即保存
+    this._persistPendingState()
   },
 
   // 每次记分都持久化暂存数据（防 app 被杀丢数据）
-  // ★ 关键修复：始终保存，即使 currentRoundScores 为空（确认本轮后到下次记分之间也要保留状态）
-  // immediate=true 时立即写 storage（onHide 场景），否则防抖 300ms
-  _persistPendingState(immediate) {
-    const { gameId, currentRoundScores, currentRound, players } = this.data
+  _persistPendingState: function() {
+    var gameId = this.data.gameId
     if (!gameId) return
 
-    const game = app.globalData.games.find(g => g.id === gameId)
-    if (game) {
-      game._pendingRound = {
-        currentRound,
-        currentRoundScores: currentRoundScores || [],
-        players: players || []
-      }
-      // 清理可能残留的 _prompted（不写入 storage）
-      delete game._prompted
-      // 记录最后活动时间
-      game.lastActivity = new Date().toISOString()
+    var game = app.globalData.games.find(function(g) { return g.id === gameId })
+    if (!game) return
 
-      if (immediate) {
-        app.saveGamesImmediate()
-      } else {
-        app.saveGamesDebounced()
-      }
+    game._pendingRound = {
+      currentRound: this.data.currentRound,
+      currentRoundScores: this.data.currentRoundScores || [],
+      players: this.data.players || []
     }
+    delete game._prompted
+    game.lastActivity = new Date().toISOString()
+
+    app.saveGames()
   },
 
   // 页面恢复时还原当前轮次
@@ -158,8 +150,8 @@ Page({
       roundHistory
     })
 
-    // 初始化后立即保存一次状态（确保 activeGameId + _pendingRound 都写入 storage）
-    this._persistPendingState(true)
+    // 初始化后保存状态
+    this._persistPendingState()
   },
 
   // ========== 快速输入 ==========
@@ -448,7 +440,7 @@ Page({
     })
 
     // ★ 确认本轮后立即保存一次状态（确保下次冷启动能检测到活跃牌局）
-    this._persistPendingState(true)
+    this._persistPendingState()
   },
 
   // ========== 结束牌局 ==========

@@ -1,7 +1,135 @@
 // 胡乐 - 打牌记分小程序
 App({
   onLaunch() {
-    // 读取本地存储的数据（带异常处理）
+    this._loadFromStorage()
+
+    if (!this.globalData.currentUser) {
+      var util = require('./utils/util')
+      this.globalData.currentUser = {
+        id: 'user_' + util.generateId(),
+        name: ''
+      }
+      this.saveCurrentUser()
+    }
+
+    // 清理旧版残留
+    this.globalData.games.forEach(function(g) { delete g._prompted })
+
+    // 冷启动检测（只设标记）
+    this._detectUnfinished()
+  },
+
+  onShow() {
+    // 热启动也检测
+    this._detectUnfinished()
+  },
+
+  // ========== 未完成牌局检测 ==========
+
+  _detectUnfinished() {
+    try {
+      var activeGameId = wx.getStorageSync('activeGameId')
+      if (activeGameId) {
+        var games = this.globalData.games
+        var game = null
+        for (var i = 0; i < games.length; i++) {
+          if (games[i].id === activeGameId && games[i].status === 'playing') {
+            game = games[i]
+            break
+          }
+        }
+        if (game) {
+          this.globalData._unfinishedGame = game
+          return
+        }
+        wx.removeStorageSync('activeGameId')
+      }
+
+      // 降级搜索
+      var games = this.globalData.games
+      var found = null
+      for (var i = 0; i < games.length; i++) {
+        if (games[i].status === 'playing') {
+          found = games[i]
+          break
+        }
+      }
+      if (found) {
+        this.globalData._unfinishedGame = found
+        wx.setStorageSync('activeGameId', found.id)
+      } else {
+        this.globalData._unfinishedGame = null
+      }
+    } catch (e) {
+      console.error('_detectUnfinished error:', e)
+      this.globalData._unfinishedGame = null
+    }
+  },
+
+  // 获取未完成牌局（只查，不弹窗，不写 storage）
+  getUnfinishedGame: function() {
+    this._detectUnfinished()
+    return this.globalData._unfinishedGame || null
+  },
+
+  // 结束未完成牌局
+  endUnfinishedGame: function(game) {
+    if (!game || !game.players) return
+
+    try {
+      var finalScores = []
+      for (var i = 0; i < game.players.length; i++) {
+        var p = game.players[i]
+        var total = 0
+        if (game.rounds) {
+          for (var j = 0; j < game.rounds.length; j++) {
+            var round = game.rounds[j]
+            if (round && round.scores) {
+              for (var k = 0; k < round.scores.length; k++) {
+                if (round.scores[k].playerId === p.id) {
+                  total += round.scores[k].score
+                }
+              }
+            }
+          }
+        }
+        finalScores.push({ playerId: p.id, playerName: p.name, total: total })
+      }
+
+      game.status = 'ended'
+      game.endTime = new Date().toISOString()
+      game.finalScores = finalScores
+      delete game._pendingRound
+      delete game._prompted
+
+      if (this.globalData._unfinishedGame === game) {
+        this.globalData._unfinishedGame = null
+      }
+      wx.removeStorageSync('activeGameId')
+      this.saveGames()
+    } catch (e) {
+      console.error('endUnfinishedGame error:', e)
+    }
+  },
+
+  // ========== 时间格式化 ==========
+
+  formatActivityTime: function(isoStr) {
+    try {
+      var d = new Date(isoStr)
+      var m = d.getMonth() + 1
+      var day = d.getDate()
+      var h = ('0' + d.getHours()).slice(-2)
+      var min = ('0' + d.getMinutes()).slice(-2)
+      return m + '月' + day + '日 ' + h + ':' + min
+    } catch (e) {
+      return ''
+    }
+  },
+
+  // ========== 存储 ==========
+
+  _loadFromStorage: function() {
     try {
       this.globalData.games = wx.getStorageSync('games') || []
       this.globalData.players = wx.getStorageSync('players') || []
@@ -12,138 +140,12 @@ App({
       this.globalData.players = []
       this.globalData.currentUser = null
     }
-
-    // 如果没有用户信息，生成一个临时 ID
-    if (!this.globalData.currentUser) {
-      const { generateId } = require('./utils/util')
-      this.globalData.currentUser = {
-        id: 'user_' + generateId(),
-        name: ''
-      }
-      this.saveCurrentUser()
-    }
-
-    // 清理历史残留的 _prompted（旧版本 bug 写进了 storage）
-    this.globalData.games.forEach(g => {
-      delete g._prompted
-    })
-
-    // 冷启动检测（只设标记，不弹窗）
-    this._doDetectUnfinished()
+    // 确保是数组
+    if (!Array.isArray(this.globalData.games)) this.globalData.games = []
+    if (!Array.isArray(this.globalData.players)) this.globalData.players = []
   },
 
-  // 热启动（从后台切回前台）也检测（只设标记，不弹窗）
-  onShow() {
-    this._doDetectUnfinished()
-  },
-
-  // 统一的检测入口（只负责数据检测，不弹窗）
-  _doDetectUnfinished() {
-    const activeGameId = wx.getStorageSync('activeGameId')
-    if (activeGameId) {
-      const game = this.globalData.games.find(g => g.id === activeGameId && g.status === 'playing')
-      if (game) {
-        this.globalData._unfinishedGame = game
-        return
-      }
-      // activeGameId 对应的牌局已结束 → 清理
-      wx.removeStorageSync('activeGameId')
-    }
-
-    // 降级：搜索所有 status=playing 的牌局
-    const game = this.globalData.games.find(g => g.status === 'playing')
-    if (game) {
-      this.globalData._unfinishedGame = game
-      wx.setStorageSync('activeGameId', game.id)
-    } else {
-      this.globalData._unfinishedGame = null
-    }
-  },
-
-  // 检查是否有未完成牌局（供页面按钮调用）
-  // 返回 true 表示有未完成牌局（已弹窗），false 表示没有
-  checkAndPromptUnfinished() {
-    this._doDetectUnfinished() // 确保最新状态
-    const game = this.globalData._unfinishedGame
-    if (!game) return false
-
-    const players = game.players.map(p => p.name).join('、')
-    const confirmedRounds = game.rounds ? game.rounds.length : 0
-    const hasPending = game._pendingRound && game._pendingRound.currentRoundScores &&
-      game._pendingRound.currentRoundScores.length > 0
-    const lastTime = game.lastActivity ? this._formatActivityTime(game.lastActivity) : ''
-
-    let content = `${players}\n已确认 ${confirmedRounds} 轮`
-    if (hasPending) {
-      content += `\n（还有 ${game._pendingRound.currentRoundScores.length} 笔未确认的记分）`
-    }
-    if (lastTime) {
-      content += `\n最后于 ${lastTime}`
-    }
-    content += '\n\n是否继续上一局？'
-
-    wx.showModal({
-      title: '有未完成的牌局',
-      content: content,
-      confirmText: '继续牌局',
-      cancelText: '结束并开新局',
-      success: (res) => {
-        if (res.confirm) {
-          wx.navigateTo({
-            url: `/pages/game/game?gameId=${game.id}`
-          })
-        } else {
-          this._endUnfinishedGame(game)
-        }
-      }
-    })
-    return true
-  },
-
-  // 格式化活动时间
-  _formatActivityTime(isoStr) {
-    try {
-      const d = new Date(isoStr)
-      const month = d.getMonth() + 1
-      const day = d.getDate()
-      const hour = d.getHours().toString().padStart(2, '0')
-      const minute = d.getMinutes().toString().padStart(2, '0')
-      return `${month}月${day}日 ${hour}:${minute}`
-    } catch (e) {
-      return ''
-    }
-  },
-
-  // 结束未完成牌局（用户选择"结束并开新局"）
-  _endUnfinishedGame(game) {
-    // 从已保存轮次计算最终分数
-    const finalScores = game.players.map(p => {
-      let total = 0
-      game.rounds.forEach(round => {
-        const ps = round.scores.filter(s => s.playerId === p.id)
-        if (ps.length > 0) total += ps.reduce((sum, s) => sum + s.score, 0)
-      })
-      return { playerId: p.id, playerName: p.name, total }
-    })
-
-    game.status = 'ended'
-    game.endTime = new Date().toISOString()
-    game.finalScores = finalScores
-    delete game._pendingRound
-    delete game._prompted
-
-    // 清除全局未完成标记
-    if (this.globalData._unfinishedGame === game) {
-      this.globalData._unfinishedGame = null
-    }
-    wx.removeStorageSync('activeGameId')
-    this.saveGames()
-
-    wx.showToast({ title: '已存档', icon: 'none' })
-  },
-
-  // 保存数据到本地存储（带异常处理）
-  saveGames() {
+  saveGames: function() {
     try {
       wx.setStorageSync('games', this.globalData.games)
     } catch (err) {
@@ -151,26 +153,7 @@ App({
     }
   },
 
-  // 防抖保存（减少高频写入 storage 的开销）
-  _saveGamesTimer: null,
-  saveGamesDebounced() {
-    if (this._saveGamesTimer) clearTimeout(this._saveGamesTimer)
-    this._saveGamesTimer = setTimeout(() => {
-      this.saveGames()
-      this._saveGamesTimer = null
-    }, 300)
-  },
-
-  // 立即保存（用于 onHide 等必须立即保存的场景）
-  saveGamesImmediate() {
-    if (this._saveGamesTimer) {
-      clearTimeout(this._saveGamesTimer)
-      this._saveGamesTimer = null
-    }
-    this.saveGames()
-  },
-
-  savePlayers() {
+  savePlayers: function() {
     try {
       wx.setStorageSync('players', this.globalData.players)
     } catch (err) {
@@ -178,7 +161,7 @@ App({
     }
   },
 
-  saveCurrentUser() {
+  saveCurrentUser: function() {
     try {
       wx.setStorageSync('currentUser', this.globalData.currentUser)
     } catch (err) {
@@ -186,105 +169,131 @@ App({
     }
   },
 
-  // 获取历史战绩统计
-  getStats() {
-    const games = this.globalData.games
-      .filter(g => g.status === 'ended')
-      .sort((a, b) => new Date(a.endTime) - new Date(b.endTime))
-    const currentUser = this.globalData.currentUser
+  // ========== 统计 ==========
 
-    if (!currentUser || games.length === 0) {
+  getStats: function() {
+    var games = this.globalData.games
+    if (!Array.isArray(games)) return { totalGames: 0, wins: 0, maxWinStreak: 0, totalScore: 0 }
+
+    var endedGames = []
+    for (var i = 0; i < games.length; i++) {
+      if (games[i].status === 'ended') endedGames.push(games[i])
+    }
+    endedGames.sort(function(a, b) { return new Date(a.endTime) - new Date(b.endTime) })
+
+    var currentUser = this.globalData.currentUser
+    if (!currentUser || endedGames.length === 0) {
       return { totalGames: 0, wins: 0, maxWinStreak: 0, totalScore: 0 }
     }
 
-    let totalGames = games.length
-    let wins = 0
-    let currentStreak = 0
-    let maxWinStreak = 0
-    let totalScore = 0
+    var totalGames = endedGames.length
+    var wins = 0
+    var currentStreak = 0
+    var maxWinStreak = 0
+    var totalScore = 0
 
-    games.forEach(game => {
-      const myScore = game.finalScores && game.finalScores.find(s => s.playerId === currentUser.id)
+    for (var i = 0; i < endedGames.length; i++) {
+      var game = endedGames[i]
+      var myScore = null
+      if (game.finalScores) {
+        for (var j = 0; j < game.finalScores.length; j++) {
+          if (game.finalScores[j].playerId === currentUser.id) {
+            myScore = game.finalScores[j]
+            break
+          }
+        }
+      }
       if (myScore) {
         totalScore += myScore.total
         if (myScore.total > 0) {
           wins++
           currentStreak++
-          maxWinStreak = Math.max(maxWinStreak, currentStreak)
+          if (currentStreak > maxWinStreak) maxWinStreak = currentStreak
         } else {
           currentStreak = 0
         }
       }
-    })
-
-    return { totalGames, wins, maxWinStreak, totalScore }
-  },
-
-  // 获取最近的牌局
-  getRecentGames(limit = 5) {
-    return this.globalData.games
-      .filter(g => g.status === 'ended')
-      .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))
-      .slice(0, limit)
-  },
-
-  // 获取所有已结束的牌局（按时间排序）
-  getAllGames() {
-    return this.globalData.games
-      .filter(g => g.status === 'ended')
-      .sort((a, b) => new Date(b.endTime) - new Date(a.endTime))
-  },
-
-  // 获取牌友战绩统计
-  getPlayerStats(playerId) {
-    const games = this.globalData.games.filter(g => g.status === 'ended')
-    let totalGames = 0
-    let wins = 0
-    let totalScore = 0
-
-    games.forEach(game => {
-      const score = game.finalScores && game.finalScores.find(s => s.playerId === playerId)
-      if (score) {
-        totalGames++
-        totalScore += score.total
-        if (score.total > 0) wins++
-      }
-    })
-
-    return { totalGames, wins, totalScore }
-  },
-
-  // 添加牌友
-  addPlayer(name) {
-    const { generateId } = require('./utils/util')
-    const exists = this.globalData.players.some(p => p.name === name)
-    if (exists) return null
-
-    const player = {
-      id: generateId(),
-      name: name,
-      createdAt: new Date().toISOString()
     }
+
+    return { totalGames: totalGames, wins: wins, maxWinStreak: maxWinStreak, totalScore: totalScore }
+  },
+
+  getRecentGames: function(limit) {
+    limit = limit || 5
+    var games = this.globalData.games
+    if (!Array.isArray(games)) return []
+
+    var ended = []
+    for (var i = 0; i < games.length; i++) {
+      if (games[i].status === 'ended') ended.push(games[i])
+    }
+    ended.sort(function(a, b) { return new Date(b.endTime) - new Date(a.endTime) })
+    return ended.slice(0, limit)
+  },
+
+  getAllGames: function() {
+    var games = this.globalData.games
+    if (!Array.isArray(games)) return []
+
+    var ended = []
+    for (var i = 0; i < games.length; i++) {
+      if (games[i].status === 'ended') ended.push(games[i])
+    }
+    ended.sort(function(a, b) { return new Date(b.endTime) - new Date(a.endTime) })
+    return ended
+  },
+
+  getPlayerStats: function(playerId) {
+    var games = this.globalData.games
+    if (!Array.isArray(games)) return { totalGames: 0, wins: 0, totalScore: 0 }
+
+    var totalGames = 0, wins = 0, totalScore = 0
+    for (var i = 0; i < games.length; i++) {
+      var game = games[i]
+      if (game.status !== 'ended' || !game.finalScores) continue
+      for (var j = 0; j < game.finalScores.length; j++) {
+        if (game.finalScores[j].playerId === playerId) {
+          totalGames++
+          var score = game.finalScores[j].total
+          totalScore += score
+          if (score > 0) wins++
+          break
+        }
+      }
+    }
+    return { totalGames: totalGames, wins: wins, totalScore: totalScore }
+  },
+
+  addPlayer: function(name) {
+    var util = require('./utils/util')
+    for (var i = 0; i < this.globalData.players.length; i++) {
+      if (this.globalData.players[i].name === name) return null
+    }
+    var player = { id: util.generateId(), name: name, createdAt: new Date().toISOString() }
     this.globalData.players.push(player)
     this.savePlayers()
     return player
   },
 
-  // 删除牌友
-  removePlayer(playerId) {
-    this.globalData.players = this.globalData.players.filter(p => p.id !== playerId)
+  removePlayer: function(playerId) {
+    var newPlayers = []
+    for (var i = 0; i < this.globalData.players.length; i++) {
+      if (this.globalData.players[i].id !== playerId) {
+        newPlayers.push(this.globalData.players[i])
+      }
+    }
+    this.globalData.players = newPlayers
     this.savePlayers()
   },
 
-  // 获取牌友列表
-  getPlayers() {
-    return this.globalData.players
+  getPlayers: function() {
+    return this.globalData.players || []
   },
 
   globalData: {
-    games: [],         // 本地牌局记录
-    players: [],       // 牌友列表
-    currentUser: null, // 当前用户信息
-    _unfinishedGame: null  // 未完成牌局（内存中，不写入 storage）
+    games: [],
+    players: [],
+    currentUser: null,
+    _unfinishedGame: null
   }
 })

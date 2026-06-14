@@ -14,14 +14,6 @@ Page({
   },
 
   onLoad(options) {
-    // ★ 先检查是否有未完成的牌局（兜底，正常应该在 index 页按钮就被拦截了）
-    if (app.checkAndPromptUnfinished()) {
-      // 有未完成牌局，弹窗让用户选择
-      // 如果用户选"继续牌局"会自动跳转，选"结束并开新局"会存档
-      // 但这里我们不能 return，因为弹窗是异步的
-      // 如果用户选"结束并开新局"，存档后 this 页面还在
-    }
-
     const currentUser = app.globalData.currentUser
     const unlimited = options.unlimited === '1'
     const maxPlayers = unlimited ? 8 : 4
