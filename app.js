@@ -28,23 +28,28 @@ App({
       delete g._prompted
     })
 
-    // 检测未完成的牌局（冷启动恢复用）
-    this.detectUnfinishedGame()
+    // 冷启动检测
+    this._doDetectUnfinished()
   },
 
-  // 检测是否有未完成的牌局
-  detectUnfinishedGame() {
-    // 优先用 activeGameId 快速定位（更可靠）
+  // 热启动（从后台切回前台）也要检测
+  onShow() {
+    // 只在未弹过的情况下检测（防止重复弹窗）
+    if (!this.globalData._unfinishedPrompted) {
+      this._doDetectUnfinished()
+    }
+  },
+
+  // 统一的检测入口
+  _doDetectUnfinished() {
     const activeGameId = wx.getStorageSync('activeGameId')
     if (activeGameId) {
       const game = this.globalData.games.find(g => g.id === activeGameId && g.status === 'playing')
       if (game) {
         this.globalData._unfinishedGame = game
-        // 延迟弹窗，等页面渲染完成
-        setTimeout(() => this.promptUnfinishedGame(), 600)
         return
       }
-      // activeGameId 存在但牌局已结束 → 清理
+      // activeGameId 对应的牌局已结束 → 清理
       wx.removeStorageSync('activeGameId')
     }
 
@@ -53,11 +58,10 @@ App({
     if (game) {
       this.globalData._unfinishedGame = game
       wx.setStorageSync('activeGameId', game.id)
-      setTimeout(() => this.promptUnfinishedGame(), 600)
     }
   },
 
-  // 弹窗提示用户继续未完成牌局
+  // 弹窗提示用户继续未完成牌局（由各 tabBar 页面在 onShow 中调用）
   promptUnfinishedGame() {
     const game = this.globalData._unfinishedGame
     if (!game) return
@@ -265,6 +269,6 @@ App({
     players: [],       // 牌友列表
     currentUser: null, // 当前用户信息
     _unfinishedGame: null,       // 未完成牌局（内存中，不写入 storage）
-    _unfinishedPrompted: false   // 本 session 是否已弹过提示（内存中）
+    _unfinishedPrompted: false    // 本 session 是否已弹过提示（内存中）
   }
 })

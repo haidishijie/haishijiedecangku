@@ -101,7 +101,7 @@ Page({
   // ========== 未完成牌局检测 ==========
 
   checkUnfinishedGame() {
-    // 委托给 app 统一处理（app.onLaunch 已经处理了冷启动场景，这里是切换 tab 的兜底）
+    // 委托给 app 统一处理
     app.promptUnfinishedGame()
   }
 })
