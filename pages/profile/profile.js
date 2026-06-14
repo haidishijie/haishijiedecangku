@@ -218,10 +218,8 @@ Page({
     if (!data) return
 
     wx.setClipboardData({
-      data: data,
-      success: () => {
-        wx.showToast({ title: '已复制到剪贴板，粘贴发送即可', icon: 'none', duration: 3000 })
-      }
+      data: data
+      // wx.setClipboardData 自带"已复制"提示，不需要额外 toast
     })
   },
 
@@ -280,13 +278,31 @@ Page({
             return
           }
 
+          // 验证 app 字段（防止导入其他应用的 JSON）
+          if (parsed.app !== 'hule-mahjong') {
+            wx.showToast({ title: '这不是胡乐的备份数据', icon: 'none' })
+            return
+          }
+
+          // 过滤结构不完整的 game（缺关键字段会导致页面报错）
+          const validGames = parsed.games.filter(g =>
+            g && g.id && g.players && Array.isArray(g.players) && g.rounds && Array.isArray(g.rounds)
+          )
+          const invalidCount = parsed.games.length - validGames.length
+          if (validGames.length === 0) {
+            wx.showToast({ title: '备份数据中没有有效牌局', icon: 'none' })
+            return
+          }
+          parsed.games = validGames
+
           // 统计导入信息
           const importGames = parsed.games.length
           const importPlayers = parsed.players ? parsed.players.length : 0
 
+          const skipHint = invalidCount > 0 ? `\n（跳过 ${invalidCount} 条损坏数据）` : ''
           wx.showModal({
             title: '确认导入',
-            content: `将导入 ${importGames} 场牌局、${importPlayers} 个牌友。\n\n已有数据会被合并（同ID不重复）。`,
+            content: `将导入 ${importGames} 场牌局、${importPlayers} 个牌友。${skipHint}\n\n已有数据会被合并（同ID不重复）。`,
             confirmText: '导入',
             cancelText: '取消',
             success: (r) => {
