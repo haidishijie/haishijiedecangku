@@ -84,13 +84,33 @@ Page({
       return
     }
 
-    const players = game.players.map(p => ({
-      id: p.id,
-      name: p.name,
-      total: p.total || 0,
-      lastRound: p.lastRound || 0,
-      roundPending: 0
-    }))
+    // 检查是否有未保存的轮次（上次异常退出时的暂存数据）
+    const pending = game._pendingRound
+    const hasPending = pending && pending.currentRoundScores && pending.currentRoundScores.length > 0
+
+    let players
+    let currentRound
+    let currentRoundScores
+
+    if (hasPending) {
+      // 恢复暂存数据
+      players = pending.players
+      currentRound = pending.currentRound
+      currentRoundScores = pending.currentRoundScores
+      // 清除暂存（避免下次还恢复）
+      delete game._pendingRound
+      app.saveGames()
+    } else {
+      players = game.players.map(p => ({
+        id: p.id,
+        name: p.name,
+        total: p.total || 0,
+        lastRound: p.lastRound || 0,
+        roundPending: 0
+      }))
+      currentRound = game.rounds.length + 1
+      currentRoundScores = []
+    }
 
     // 获取最近4轮历史
     const roundHistory = game.rounds.slice(-4).reverse().map(round => ({
@@ -102,7 +122,8 @@ Page({
       gameId,
       players,
       playerNamesStr: players.map(p => p.name).join(' '),
-      currentRound: game.rounds.length + 1,
+      currentRound,
+      currentRoundScores,
       selectedIndex: -1,
       roundHistory
     })
