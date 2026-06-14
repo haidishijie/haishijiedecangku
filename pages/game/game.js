@@ -38,8 +38,13 @@ Page({
 
   // 页面切到后台时保存当前轮次（防止微信消息切换导致数据丢失）
   onHide() {
+    this._persistPendingState()
+  },
+
+  // 持久化当前轮次暂存数据（每次记分都调用，防被杀丢数据）
+  _persistPendingState() {
     const { gameId, currentRoundScores, currentRound, players } = this.data
-    if (!gameId || currentRoundScores.length === 0) return
+    if (!gameId || !currentRoundScores || currentRoundScores.length === 0) return
 
     const game = app.globalData.games.find(g => g.id === gameId)
     if (game) {
@@ -254,6 +259,9 @@ Page({
       customScore: ''
     })
 
+    // 每一步记分都持久化暂存（防 app 被杀丢失数据）
+    this._persistPendingState()
+
     wx.vibrateShort({ type: 'light' })
   },
 
@@ -300,6 +308,9 @@ Page({
       currentRoundScores: newScores,
       customScore: ''
     })
+
+    // 每一步记分都持久化暂存（防 app 被杀丢失数据）
+    this._persistPendingState()
 
     wx.vibrateShort({ type: 'light' })
   },
