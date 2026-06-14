@@ -73,15 +73,21 @@ Page({
     wx.showToast({ title: '头像已更新 ✅', icon: 'none', duration: 1000 })
   },
 
-  // 昵称输入
+  // 昵称输入（type="nickname" 选择微信昵称时也会触发）
   onNicknameInput(e) {
-    this.setData({ userName: e.detail.value })
+    const name = e.detail.value.trim()
+    this.setData({ userName: name })
+    // 选择微信昵称后立即保存（不等失焦）
+    if (name && app.globalData.currentUser && name !== app.globalData.currentUser.name) {
+      app.globalData.currentUser.name = name
+      app.saveCurrentUser()
+    }
   },
 
-  // 昵称失焦保存
+  // 昵称失焦保存（兜底）
   onNicknameBlur(e) {
     const name = e.detail.value.trim()
-    if (name && name !== app.globalData.currentUser?.name) {
+    if (name && app.globalData.currentUser && name !== app.globalData.currentUser.name) {
       app.globalData.currentUser.name = name
       app.saveCurrentUser()
       wx.showToast({ title: '昵称已保存', icon: 'none', duration: 1000 })
