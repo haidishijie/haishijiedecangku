@@ -11,12 +11,11 @@
       </view>
     </button>
 
-    <!-- 昵称 - 使用 type="nickname" 自动获取微信昵称 -->
+    <!-- 昵称 -->
     <view class="nickname-wrap">
       <input
         class="nickname-input"
-        type="nickname"
-        placeholder="点击获取微信昵称"
+        placeholder="输入你的昵称"
         value="{{userName}}"
         bindinput="onNicknameInput"
         bindblur="onNicknameBlur"
