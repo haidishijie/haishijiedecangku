@@ -101,12 +101,13 @@ Page({
   // ========== 未完成牌局检测 ==========
 
   checkUnfinishedGame() {
-    // 只检测一次，避免每次 onShow 都弹窗
-    if (this._checkedUnfinished) return
-    this._checkedUnfinished = true
+    // 读取 app 启动时检测到的未完成牌局
+    const game = app.globalData._unfinishedGame
+    if (!game) return
 
-    const game = app.globalData.games.find(g => g.status === 'playing')
-    if (!game || !game.rounds || game.rounds.length === 0) return
+    // 防止重复弹窗
+    if (game._prompted) return
+    game._prompted = true
 
     const players = game.players.map(p => p.name).join('、')
     const lastRound = game.rounds.length
@@ -144,6 +145,11 @@ Page({
     game.endTime = new Date().toISOString()
     game.finalScores = finalScores
     delete game._pendingRound
+    delete game._prompted
+    // 清除全局未完成标记
+    if (app.globalData._unfinishedGame === game) {
+      app.globalData._unfinishedGame = null
+    }
     app.saveGames()
 
     wx.showToast({ title: '已存档', icon: 'none' })

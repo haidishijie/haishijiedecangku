@@ -22,6 +22,15 @@ App({
       }
       this.saveCurrentUser()
     }
+
+    // 检测未完成的牌局（冷启动恢复用）
+    this.detectUnfinishedGame()
+  },
+
+  // 检测是否有未完成的牌局
+  detectUnfinishedGame() {
+    const game = this.globalData.games.find(g => g.status === 'playing' && g.rounds && g.rounds.length > 0)
+    this.globalData._unfinishedGame = game || null
   },
 
   // 保存数据到本地存储（带异常处理）
