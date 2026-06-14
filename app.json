@@ -6,7 +6,8 @@
     "pages/new-game/new-game",
     "pages/game/game",
     "pages/result/result",
-    "pages/history/history"
+    "pages/history/history",
+    "pages/wheel/wheel"
   ],
   "window": {
     "navigationBarBackgroundColor": "#F2F2F7",

@@ -1,0 +1,107 @@
+<!-- 大转盘 -->
+<view class="container">
+  <!-- 标题 -->
+  <view class="page-header">
+    <view class="page-title">🎰 幸运大转盘</view>
+    <view class="page-desc">添加奖品，转动命运</view>
+  </view>
+
+  <!-- 转盘区域 -->
+  <view class="wheel-section">
+    <canvas type="2d" id="wheelCanvas" class="wheel-canvas"></canvas>
+
+    <!-- 转动按钮 -->
+    <view class="spin-btn-wrap">
+      <view
+        class="spin-btn {{isSpinning || prizes.length < 2 ? 'disabled' : ''}}"
+        bindtap="onSpin"
+      >
+        {{isSpinning ? '转动中...' : prizes.length < 2 ? '添加奖品' : '开始转动'}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 结果弹窗 -->
+  <view class="result-overlay {{showResult ? 'show' : ''}}" catchtap="onCloseResult">
+    <view class="result-card" catchtap="">
+      <view class="result-emoji">🎉</view>
+      <view class="result-label">恭喜获得</view>
+      <view class="result-prize">{{result}}</view>
+      <view class="result-close" bindtap="onCloseResult">确定</view>
+    </view>
+  </view>
+
+  <!-- 奖品设置 -->
+  <view class="prize-section">
+    <view class="section-header">
+      <text class="section-title">🎁 奖品设置</text>
+      <text class="section-count">{{prizes.length}}/10</text>
+    </view>
+
+    <!-- 输入框 -->
+    <view class="prize-input-wrap">
+      <input
+        class="prize-input"
+        placeholder="输入奖品名称"
+        value="{{inputName}}"
+        bindinput="onInputName"
+        bindconfirm="onAddPrize"
+        maxlength="10"
+      />
+      <view class="btn-add {{prizes.length >= 10 ? 'disabled' : ''}}" bindtap="onAddPrize">
+        添加
+      </view>
+    </view>
+
+    <!-- 奖品列表 -->
+    <view class="prize-list" wx:if="{{prizes.length > 0}}">
+      <view
+        wx:for="{{prizes}}"
+        wx:key="name"
+        class="prize-tag"
+        style="background: {{item.color}}20; color: {{item.color}}; border-color: {{item.color}}40"
+      >
+        <text class="prize-name">{{item.name}}</text>
+        <text class="prize-remove" bindtap="onRemovePrize" data-index="{{index}}">✕</text>
+      </view>
+    </view>
+
+    <!-- 快捷添加（奖品为空时显示） -->
+    <view class="quick-prizes" wx:if="{{prizes.length === 0}}">
+      <view class="quick-hint">快捷添加：</view>
+      <view class="quick-tags">
+        <view class="qtag" bindtap="onQuickAdd" data-name="请喝水">请喝水</view>
+        <view class="qtag" bindtap="onQuickAdd" data-name="唱首歌">唱首歌</view>
+        <view class="qtag" bindtap="onQuickAdd" data-name="做俯卧撑">做俯卧撑</view>
+        <view class="qtag" bindtap="onQuickAdd" data-name="讲个笑话">讲个笑话</view>
+        <view class="qtag" bindtap="onQuickAdd" data-name="发红包">发红包</view>
+        <view class="qtag" bindtap="onQuickAdd" data-name="免单一次">免单一次</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-section">
+    <view class="section-header" bindtap="onToggleHistory">
+      <text class="section-title">📋 历史记录</text>
+      <view class="history-toggle">
+        <text wx:if="{{history.length > 0}}">{{history.length}}次</text>
+        <text class="toggle-arrow">{{showHistory ? '▲' : '▼'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showHistory && history.length > 0}}" class="history-list">
+      <view wx:for="{{history}}" wx:key="time" class="history-item">
+        <view class="history-result" style="background: {{prizes[0]?.color || '#FF6B9D'}}20">
+          {{item.result}}
+        </view>
+        <view class="history-time">{{item.time}}</view>
+      </view>
+      <view class="btn-clear" bindtap="onClearHistory">清空历史</view>
+    </view>
+
+    <view wx:if="{{showHistory && history.length === 0}}" class="history-empty">
+      还没有转过哦
+    </view>
+  </view>
+</view>

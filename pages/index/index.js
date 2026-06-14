@@ -86,5 +86,12 @@ Page({
     wx.navigateTo({
       url: '/pages/profile/profile'
     })
+  },
+
+  // 跳转到大转盘
+  onGoWheel() {
+    wx.navigateTo({
+      url: '/pages/wheel/wheel'
+    })
   }
 })

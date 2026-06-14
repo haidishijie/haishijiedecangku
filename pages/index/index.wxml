@@ -17,6 +17,10 @@
       <text class="btn-icon">🃏</text>
       <text class="btn-text">快速开局</text>
     </button>
+    <button class="btn-start btn-wheel" bindtap="onGoWheel">
+      <text class="btn-icon">🎰</text>
+      <text class="btn-text">幸运大转盘</text>
+    </button>
   </view>
   <!-- 最近战绩 -->
   <view class="recent-section">
