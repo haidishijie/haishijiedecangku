@@ -241,6 +241,9 @@ Page({
     const BOM = '\uFEFF'
     const lines = []
 
+    // sep= 告诉 Excel 用逗号分列（部分系统默认用分号）
+    lines.push('sep=,')
+
     // 表头：牌局汇总
     lines.push('=== 牌局汇总 ===')
     lines.push('日期,时间,人数,轮数,玩家1,分数1,玩家2,分数2,玩家3,分数3,玩家4,分数4,赢家')
