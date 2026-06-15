@@ -29,9 +29,7 @@
     <!-- 第二名 -->
     <view wx:if="{{rankings.length > 1}}" class="top-item rank-2">
       <view class="top-medal">🥈</view>
-      <view class="top-avatar" style="background: {{avatarColors[1]}}15; color: {{avatarColors[1]}}">
-        {{rankings[1].name[0]}}
-      </view>
+      <view class="top-avatar rank-avatar-2">{{rankings[1].name[0]}}</view>
       <view class="top-name">{{rankings[1].name}}</view>
       <view class="top-score {{rankings[1].totalScore > 0 ? 'positive' : 'negative'}}">
         {{rankings[1].totalScore > 0 ? '+' : ''}}{{rankings[1].totalScore}}
@@ -42,9 +40,7 @@
     <!-- 第一名 -->
     <view wx:if="{{rankings.length > 0}}" class="top-item rank-1">
       <view class="top-medal">🥇</view>
-      <view class="top-avatar" style="background: {{avatarColors[0]}}15; color: {{avatarColors[0]}}">
-        {{rankings[0].name[0]}}
-      </view>
+      <view class="top-avatar rank-avatar-1">{{rankings[0].name[0]}}</view>
       <view class="top-name">{{rankings[0].name}}</view>
       <view class="top-score {{rankings[0].totalScore > 0 ? 'positive' : 'negative'}}">
         {{rankings[0].totalScore > 0 ? '+' : ''}}{{rankings[0].totalScore}}
@@ -55,9 +51,7 @@
     <!-- 第三名 -->
     <view wx:if="{{rankings.length > 2}}" class="top-item rank-3">
       <view class="top-medal">🥉</view>
-      <view class="top-avatar" style="background: {{avatarColors[2]}}15; color: {{avatarColors[2]}}">
-        {{rankings[2].name[0]}}
-      </view>
+      <view class="top-avatar rank-avatar-3">{{rankings[2].name[0]}}</view>
       <view class="top-name">{{rankings[2].name}}</view>
       <view class="top-score {{rankings[2].totalScore > 0 ? 'positive' : 'negative'}}">
         {{rankings[2].totalScore > 0 ? '+' : ''}}{{rankings[2].totalScore}}
@@ -72,9 +66,7 @@
 
     <view wx:for="{{rankings}}" wx:key="playerId" wx:if="{{index >= 3}}" class="rank-item">
       <view class="rank-num">{{index + 1}}</view>
-      <view class="rank-avatar" style="background: {{avatarColors[index % 4]}}15; color: {{avatarColors[index % 4]}}">
-        {{item.name[0]}}
-      </view>
+      <view class="rank-avatar rank-avatar-{{index % 4}}">{{item.name[0]}}</view>
       <view class="rank-info">
         <view class="rank-name">{{item.name}}</view>
         <view class="rank-stats">

@@ -64,7 +64,7 @@
     </view>
     <view wx:for="{{topOpponents}}" wx:key="playerId" class="opponent-item">
       <view class="opponent-rank">{{index + 1}}</view>
-      <view class="opponent-avatar" style="background: {{opponentColors[index % 4]}}15; color: {{opponentColors[index % 4]}}">
+      <view class="opponent-avatar opponent-avatar-{{index % 4}}">
         {{item.name[0]}}
       </view>
       <view class="opponent-info">

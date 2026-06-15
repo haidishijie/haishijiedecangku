@@ -235,6 +235,27 @@
   color: #185FA5;
 }
 
+/* 牌友头像颜色类（替换内联8位hex，兼容所有设备） */
+.opponent-avatar-0 {
+  background: rgba(0, 122, 255, 0.08);
+  color: #007AFF;
+}
+
+.opponent-avatar-1 {
+  background: rgba(52, 199, 89, 0.08);
+  color: #34C759;
+}
+
+.opponent-avatar-2 {
+  background: rgba(175, 82, 222, 0.08);
+  color: #AF52DE;
+}
+
+.opponent-avatar-3 {
+  background: rgba(255, 149, 0, 0.08);
+  color: #FF9500;
+}
+
 /* 设置 */
 .settings-section {
   margin-bottom: 24px;

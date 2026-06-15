@@ -9,15 +9,23 @@ Page({
     history: [],          // 历史记录
     showHistory: false,
     canvasReady: false,
-    prizeColor: '#FF6B9D' // 第一个奖品颜色（历史记录用）
+    prizeColor: '#FF6B9D', // 第一个奖品颜色（历史记录用）
+    prizeBgColor: 'rgba(255,107,157,0.12)', // rgba 版本背景色
   },
 
-  // 转盘颜色
+  // 转盘颜色 + rgba 缓存（避免 WXML 中使用 8 位 hex）
   colors: [
     '#FF6B9D', '#FF8A80', '#FFB74D', '#FFD54F',
     '#AED581', '#4FC3F7', '#7986CB', '#BA68C8',
     '#F06292', '#4DD0E1'
   ],
+  // hex → rgba（alpha=0.12 即 hex 20，alpha=0.25 即 hex 40）
+  _hexToRgba: function(hex, alpha) {
+    var r = parseInt(hex.slice(1, 3), 16)
+    var g = parseInt(hex.slice(3, 5), 16)
+    var b = parseInt(hex.slice(5, 7), 16)
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + alpha + ')'
+  },
 
   onLoad() {
     this.loadHistory()
@@ -74,20 +82,32 @@ Page({
       return
     }
 
-    const prizes = [...this.data.prizes, {
-      name,
-      color: this.colors[this.data.prizes.length % this.colors.length]
-    }]
-    this.setData({ prizes, inputName: '', prizeColor: prizes[0].color })
+    const prizes = [...this.data.prizes, this._createPrize(name)]
+    this.setData({ prizes, inputName: '', prizeColor: prizes[0].color, prizeBgColor: prizes[0].prizeBg })
     this.drawWheel()
+  },
+
+  // 创建奖品对象（含 rgba 背景色，绕过 8 位 hex 兼容性问题）
+  _createPrize: function(name, index) {
+    var i = (index !== undefined) ? index : this.data.prizes.length
+    var color = this.colors[i % this.colors.length]
+    return {
+      name: name,
+      color: color,
+      prizeBg: this._hexToRgba(color, 0.12),
+      prizeBorder: this._hexToRgba(color, 0.25)
+    }
   },
 
   onRemovePrize(e) {
     const index = e.currentTarget.dataset.index
-    const prizes = this.data.prizes.filter((_, i) => i !== index)
-    // 重新分配颜色
-    prizes.forEach((p, i) => { p.color = this.colors[i % this.colors.length] })
-    this.setData({ prizes, prizeColor: prizes.length > 0 ? prizes[0].color : '#FF6B9D' })
+    var prizes = this.data.prizes.filter(function(_, i) { return i !== index })
+    // 重新分配颜色（用 _createPrize 确保 prizeBg/prizeBorder 也更新）
+    var self = this
+    prizes = prizes.map(function(p, i) { return self._createPrize(p.name, i) })
+    var firstColor = prizes.length > 0 ? prizes[0].color : '#FF6B9D'
+    var firstBg = prizes.length > 0 ? prizes[0].prizeBg : 'rgba(255,107,157,0.12)'
+    this.setData({ prizes: prizes, prizeColor: firstColor, prizeBgColor: firstBg })
     this.drawWheel()
   },
 
@@ -312,11 +332,8 @@ Page({
       wx.showToast({ title: '已添加过了', icon: 'none' })
       return
     }
-    const prizes = [...this.data.prizes, {
-      name,
-      color: this.colors[this.data.prizes.length % this.colors.length]
-    }]
-    this.setData({ prizes, prizeColor: prizes[0].color })
+    const prizes = [...this.data.prizes, this._createPrize(name)]
+    this.setData({ prizes, prizeColor: prizes[0].color, prizeBgColor: prizes[0].prizeBg })
     this.drawWheel()
   }
 })

@@ -24,6 +24,14 @@ Page({
     this._rollOnce(false)
   },
 
+  // ★ 页面退出时清理动画定时器
+  onUnload: function() {
+    if (this._rollInterval) {
+      clearInterval(this._rollInterval)
+      this._rollInterval = null
+    }
+  },
+
   // ========== 骰子数量选择 ==========
 
   onSelectDiceCount: function(e) {
@@ -65,10 +73,12 @@ Page({
     var self = this
     var frames = 0
     var maxFrames = 12  // 约 1 秒动画
-    var interval
+
+    // ★ 存储到 this 上，方便 onUnload 清理
+    if (this._rollInterval) clearInterval(this._rollInterval)
 
     // 动画：快速切换随机值
-    interval = setInterval(function() {
+    this._rollInterval = setInterval(function() {
       var tempValues = []
       for (var i = 0; i < count; i++) {
         tempValues.push(Math.floor(Math.random() * 6) + 1)
@@ -84,7 +94,8 @@ Page({
       frames++
 
       if (frames >= maxFrames) {
-        clearInterval(interval)
+        clearInterval(self._rollInterval)
+        self._rollInterval = null
         // 最终结果
         var finalTotal = 0
         for (var k = 0; k < finalValues.length; k++) {

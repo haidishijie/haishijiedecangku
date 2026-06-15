@@ -59,7 +59,7 @@
         wx:for="{{prizes}}"
         wx:key="name"
         class="prize-tag"
-        style="background: {{item.color}}20; color: {{item.color}}; border-color: {{item.color}}40"
+        style="background: {{item.prizeBg}}; color: {{item.color}}; border-color: {{item.prizeBorder}}"
       >
         <text class="prize-name">{{item.name}}</text>
         <text class="prize-remove" bindtap="onRemovePrize" data-index="{{index}}">✕</text>
@@ -92,7 +92,7 @@
 
     <view wx:if="{{showHistory && history.length > 0}}" class="history-list">
       <view wx:for="{{history}}" wx:key="time" class="history-item">
-        <view class="history-result" style="background: {{prizeColor}}20">
+        <view class="history-result" style="background: {{prizeBgColor}}">
           {{item.result}}
         </view>
         <view class="history-time">{{item.timeStr}}</view>
