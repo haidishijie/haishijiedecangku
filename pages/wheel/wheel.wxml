@@ -66,8 +66,8 @@
       </view>
     </view>
 
-    <!-- 快捷添加（奖品为空时显示） -->
-    <view class="quick-prizes" wx:if="{{prizes.length === 0}}">
+    <!-- 快捷添加（始终显示，方便多次操作） -->
+    <view class="quick-prizes">
       <view class="quick-hint">快捷添加：</view>
       <view class="quick-tags">
         <view class="qtag" bindtap="onQuickAdd" data-name="请喝水">请喝水</view>

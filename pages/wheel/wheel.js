@@ -301,10 +301,17 @@ Page({
     this.setData({ showResult: false })
   },
 
-  // 跳过2个奖品的预设
+  // 快捷添加预设
   onQuickAdd(e) {
     const name = e.currentTarget.dataset.name
-    if (this.data.prizes.length >= 10 || this.data.prizes.some(p => p.name === name)) return
+    if (this.data.prizes.length >= 10) {
+      wx.showToast({ title: '最多10个奖品', icon: 'none' })
+      return
+    }
+    if (this.data.prizes.some(p => p.name === name)) {
+      wx.showToast({ title: '已添加过了', icon: 'none' })
+      return
+    }
     const prizes = [...this.data.prizes, {
       name,
       color: this.colors[this.data.prizes.length % this.colors.length]
