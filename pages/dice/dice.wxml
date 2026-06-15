@@ -1,0 +1,118 @@
+<!-- 疯狂骰子 -->
+<view class="container">
+  <!-- 标题 -->
+  <view class="page-header">
+    <view class="page-title">🎲 疯狂骰子</view>
+    <view class="page-desc">选择骰子数量，比一比谁是幸运之王</view>
+  </view>
+
+  <!-- 骰子数量选择 -->
+  <view class="dice-select">
+    <view class="select-label">骰子数量</view>
+    <view class="select-options">
+      <view
+        wx:for="{{[1,2,3,4]}}"
+        wx:key="*this"
+        class="select-btn {{diceCount === item ? 'active' : ''}} {{isRolling ? 'disabled' : ''}}"
+        data-count="{{item}}"
+        bindtap="onSelectDiceCount"
+      >
+        {{item}}个
+      </view>
+    </view>
+  </view>
+
+  <!-- 骰子展示区 -->
+  <view class="dice-area">
+    <view class="dice-row">
+      <view
+        wx:for="{{diceValues}}"
+        wx:key="*this"
+        class="dice-box {{isRolling ? 'rolling' : ''}}"
+        style="animation-delay: {{index * 0.08}}s"
+      >
+        <view class="dice-face">{{item}}</view>
+      </view>
+    </view>
+
+    <!-- 总计 -->
+    <view class="total-section">
+      <view class="total-label">本轮点数</view>
+      <view class="total-value {{isRolling ? 'rolling' : ''}}">{{total}}</view>
+    </view>
+  </view>
+
+  <!-- 投掷按钮 -->
+  <view class="roll-section">
+    <view
+      class="roll-btn {{isRolling ? 'disabled' : ''}}"
+      bindtap="onRoll"
+    >
+      {{isRolling ? '🎲 投掷中...' : '🎲 开始投掷'}}
+    </view>
+  </view>
+
+  <!-- 统计数据 -->
+  <view class="stats-section">
+    <view class="stat-item">
+      <view class="stat-num">{{rollCount}}</view>
+      <view class="stat-label">总投掷</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num stat-best">{{stats.maxTotal}}</view>
+      <view class="stat-label">最高记录</view>
+    </view>
+    <view class="stat-item">
+      <view class="stat-num">{{stats.minTotal < 99 ? stats.minTotal : '--'}}</view>
+      <view class="stat-label">最低记录</view>
+    </view>
+  </view>
+
+  <!-- 结果弹窗 -->
+  <view class="result-overlay {{showResult ? 'show' : ''}}" catchtap="onCloseResult">
+    <view class="result-card" catchtap="">
+      <view class="result-emoji">
+        <block wx:if="{{total >= diceCount * 5}}">🔥</block>
+        <block wx:elif="{{total <= diceCount * 2}}">😅</block>
+        <block wx:else>🎉</block>
+      </view>
+      <view class="result-label">本次投掷</view>
+      <view class="result-dice">
+        <text wx:for="{{diceValues}}" wx:key="*this" class="result-die">{{item}}</text>
+      </view>
+      <view class="result-total">总计 <text class="result-total-num">{{total}}</text> 点</view>
+      <view class="result-close" bindtap="onCloseResult">好的</view>
+    </view>
+  </view>
+
+  <!-- 历史记录 -->
+  <view class="history-section">
+    <view class="section-header" bindtap="onToggleHistory">
+      <text class="section-title">📋 投掷记录</text>
+      <view class="history-toggle">
+        <text wx:if="{{history.length > 0}}">{{history.length}}次</text>
+        <text class="toggle-arrow">{{showHistory ? '▲' : '▼'}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{showHistory && history.length > 0}}" class="history-list">
+      <view wx:for="{{history}}" wx:key="time" class="history-item">
+        <view class="history-left">
+          <view class="history-dice">
+            <text wx:for="{{item.values}}" wx:key="*this" class="hdice">{{item}}</text>
+          </view>
+          <view class="history-time">{{item.timeStr}}</view>
+        </view>
+        <view class="history-right">
+          <text class="history-total">{{item.total > 0 ? '+' : ''}}{{item.total}}点</text>
+          <text class="history-count">{{item.diceCount}}个骰子</text>
+        </view>
+      </view>
+      <view class="btn-clear" bindtap="onClearHistory">清空历史</view>
+    </view>
+
+    <view wx:if="{{showHistory && history.length === 0}}" class="history-empty">
+      还没有投掷记录哦 🎲
+    </view>
+  </view>
+</view>

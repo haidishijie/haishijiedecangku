@@ -21,6 +21,10 @@
       <text class="btn-icon">🎰</text>
       <text class="btn-text">幸运大转盘</text>
     </button>
+    <button class="btn-start btn-dice" bindtap="onGoDice">
+      <text class="btn-icon">🎲</text>
+      <text class="btn-text">疯狂骰子</text>
+    </button>
   </view>
   <!-- 最近战绩 -->
   <view class="recent-section">

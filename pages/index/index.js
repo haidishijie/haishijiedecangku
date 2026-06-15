@@ -62,5 +62,9 @@ Page({
 
   onGoWheel: function() {
     wx.navigateTo({ url: '/pages/wheel/wheel' })
+  },
+
+  onGoDice: function() {
+    wx.navigateTo({ url: '/pages/dice/dice' })
   }
 })

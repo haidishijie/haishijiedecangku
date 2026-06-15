@@ -1,0 +1,408 @@
+/* 疯狂骰子样式 */
+.container {
+  min-height: 100vh;
+  padding: 0 20px 40px;
+  background: linear-gradient(180deg, #E8F5E9 0%, #FFFFFF 25%);
+}
+
+/* 页面标题 */
+.page-header {
+  padding: 20px 0 10px;
+  text-align: center;
+}
+
+.page-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2C2C2A;
+}
+
+.page-desc {
+  font-size: 13px;
+  color: #888780;
+  margin-top: 4px;
+}
+
+/* ========== 骰子数量选择 ========== */
+.dice-select {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.select-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #5F5E5A;
+  margin-bottom: 12px;
+}
+
+.select-options {
+  display: flex;
+  gap: 10px;
+}
+
+.select-btn {
+  flex: 1;
+  height: 44px;
+  line-height: 44px;
+  text-align: center;
+  background: #F5F5F5;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #5F5E5A;
+  transition: all 0.2s;
+}
+
+.select-btn.active {
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #FFFFFF;
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.35);
+}
+
+.select-btn.disabled {
+  opacity: 0.5;
+}
+
+/* ========== 骰子展示区 ========== */
+.dice-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 30px 0 20px;
+}
+
+.dice-row {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dice-box {
+  width: 80px;
+  height: 80px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), inset 0 -2px 0 rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #E0E0E0;
+  transition: transform 0.15s;
+}
+
+.dice-box.rolling {
+  animation: diceShake 0.15s infinite alternate;
+}
+
+@keyframes diceShake {
+  0% { transform: rotate(-8deg) scale(1.05); }
+  100% { transform: rotate(8deg) scale(1.05); }
+}
+
+.dice-face {
+  font-size: 36px;
+  font-weight: 800;
+  color: #2C2C2A;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 各面值的独特颜色 */
+.dice-box:nth-child(1) .dice-face { color: #E53935; }
+.dice-box:nth-child(2) .dice-face { color: #43A047; }
+.dice-box:nth-child(3) .dice-face { color: #1E88E5; }
+.dice-box:nth-child(4) .dice-face { color: #FB8C00; }
+
+/* 总计 */
+.total-section {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.total-label {
+  font-size: 13px;
+  color: #888780;
+  margin-bottom: 4px;
+}
+
+.total-value {
+  font-size: 48px;
+  font-weight: 800;
+  color: #4CAF50;
+  transition: all 0.2s;
+}
+
+.total-value.rolling {
+  animation: totalPulse 0.15s infinite alternate;
+}
+
+@keyframes totalPulse {
+  0% { transform: scale(1); opacity: 0.6; }
+  100% { transform: scale(1.1); opacity: 1; }
+}
+
+/* ========== 投掷按钮 ========== */
+.roll-section {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.roll-btn {
+  display: inline-block;
+  width: 220px;
+  height: 52px;
+  line-height: 52px;
+  text-align: center;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #FFFFFF;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 26px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+  transition: all 0.2s;
+  letter-spacing: 2px;
+}
+
+.roll-btn:active {
+  transform: scale(0.96);
+  box-shadow: 0 3px 10px rgba(76, 175, 80, 0.3);
+}
+
+.roll-btn.disabled {
+  background: #D3D1C7;
+  box-shadow: none;
+  color: #FFFFFF;
+  transform: none;
+}
+
+/* ========== 统计数据 ========== */
+.stats-section {
+  display: flex;
+  gap: 10px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.stat-item {
+  flex: 1;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: #4CAF50;
+}
+
+.stat-num.stat-best {
+  color: #FF6F00;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: #888780;
+  margin-top: 2px;
+}
+
+/* ========== 结果弹窗 ========== */
+.result-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.result-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.result-card {
+  width: 280px;
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 36px 24px;
+  text-align: center;
+  transform: scale(0.8);
+  transition: transform 0.3s;
+}
+
+.result-overlay.show .result-card {
+  transform: scale(1);
+}
+
+.result-emoji {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.result-label {
+  font-size: 14px;
+  color: #888780;
+  margin-bottom: 8px;
+}
+
+.result-dice {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.result-die {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+  text-align: center;
+  background: #F5F5F5;
+  border-radius: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #2C2C2A;
+  border: 1px solid #E0E0E0;
+}
+
+.result-total {
+  font-size: 16px;
+  color: #5F5E5A;
+  margin-bottom: 24px;
+}
+
+.result-total-num {
+  font-size: 28px;
+  font-weight: 800;
+  color: #4CAF50;
+}
+
+.result-close {
+  display: inline-block;
+  padding: 10px 40px;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A);
+  color: #FFFFFF;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 20px;
+}
+
+/* ========== 历史记录 ========== */
+.history-section {
+  background: #FFFFFF;
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #2C2C2A;
+}
+
+.history-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888780;
+}
+
+.toggle-arrow {
+  font-size: 10px;
+}
+
+.history-list {
+  margin-top: 12px;
+}
+
+.history-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 0.5px solid #F0F0F0;
+}
+
+.history-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-dice {
+  display: flex;
+  gap: 6px;
+}
+
+.hdice {
+  width: 28px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  background: #E8F5E9;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #2C2C2A;
+}
+
+.history-time {
+  font-size: 11px;
+  color: #B4B2A9;
+}
+
+.history-right {
+  text-align: right;
+}
+
+.history-total {
+  display: block;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4CAF50;
+}
+
+.history-count {
+  display: block;
+  font-size: 11px;
+  color: #B4B2A9;
+  margin-top: 2px;
+}
+
+.btn-clear {
+  text-align: center;
+  padding: 12px 0 4px;
+  font-size: 13px;
+  color: #E24B4A;
+}
+
+.history-empty {
+  text-align: center;
+  padding: 20px 0;
+  font-size: 13px;
+  color: #B4B2A9;
+}

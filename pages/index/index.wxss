@@ -76,6 +76,12 @@
   box-shadow: 0 6px 20px rgba(175, 82, 222, 0.35);
 }
 
+.btn-dice {
+  margin-top: 14px;
+  background: linear-gradient(135deg, #4CAF50, #66BB6A) !important;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.35);
+}
+
 /* 统计卡片 */
 .stats-section {
   display: flex;
