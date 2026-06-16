@@ -39,6 +39,20 @@
     </view>
   </view>
 
+  <!-- 核心承诺 -->
+  <view class="promises">
+    <view class="promise-badge">
+      <view class="promise-icon">💰</view>
+      <view class="promise-label">永久免费</view>
+      <view class="promise-desc">所有功能完全免费，无任何付费门槛</view>
+    </view>
+    <view class="promise-badge">
+      <view class="promise-icon">🚫</view>
+      <view class="promise-label">零广告</view>
+      <view class="promise-desc">干净清爽，专注记分体验</view>
+    </view>
+  </view>
+
   <!-- 打开按钮 -->
   <view class="cta-section">
     <button class="btn-open" bindtap="onGoHome">

@@ -479,3 +479,39 @@
   color: #888780;
   line-height: 1.5;
 }
+
+/* 核心承诺 */
+.intro-promises {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 0 16px 16px;
+}
+
+.intro-promise-badge {
+  flex: 1;
+  background: linear-gradient(135deg, #FFF0F5, #FFE4EC);
+  border: 1.5px solid #F4C0D1;
+  border-radius: 14px;
+  padding: 16px 12px;
+  text-align: center;
+}
+
+.intro-promise-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.intro-promise-label {
+  font-size: 16px;
+  font-weight: 800;
+  color: #E24B4A;
+  margin-bottom: 3px;
+  letter-spacing: 1px;
+}
+
+.intro-promise-desc {
+  font-size: 10px;
+  color: #888780;
+  line-height: 1.4;
+}

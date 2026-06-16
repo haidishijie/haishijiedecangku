@@ -136,6 +136,19 @@
         </view>
       </view>
     </view>
+    <!-- 核心承诺 -->
+    <view class="intro-promises">
+      <view class="intro-promise-badge">
+        <view class="intro-promise-icon">💰</view>
+        <view class="intro-promise-label">永久免费</view>
+        <view class="intro-promise-desc">所有功能完全免费，无任何付费门槛</view>
+      </view>
+      <view class="intro-promise-badge">
+        <view class="intro-promise-icon">🚫</view>
+        <view class="intro-promise-label">零广告</view>
+        <view class="intro-promise-desc">干净清爽，专注记分体验</view>
+      </view>
+    </view>
   </view>
 
   <!-- 主题选择弹窗 -->
