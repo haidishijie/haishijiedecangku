@@ -42,12 +42,10 @@
   <!-- 核心承诺 -->
   <view class="share-promises">
     <view class="share-promise-badge">
-      <view class="share-promise-icon">💰</view>
       <view class="share-promise-label">永久免费</view>
       <view class="share-promise-desc">所有功能完全免费，无任何付费门槛</view>
     </view>
     <view class="share-promise-badge">
-      <view class="share-promise-icon">🚫</view>
       <view class="share-promise-label">零广告</view>
       <view class="share-promise-desc">干净清爽，专注记分体验</view>
     </view>

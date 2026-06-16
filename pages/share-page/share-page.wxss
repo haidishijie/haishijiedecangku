@@ -82,36 +82,31 @@
   width: 100%;
   max-width: 360px;
   display: flex;
-  gap: 12px;
-  margin-bottom: 40px;
+  gap: 10px;
+  margin-bottom: 32px;
 }
 
 .promise-badge {
   flex: 1;
   background: linear-gradient(135deg, #FFF0F5, #FFE4EC);
   border: 1.5px solid #F4C0D1;
-  border-radius: 16px;
-  padding: 20px 16px;
+  border-radius: 12px;
+  padding: 12px 10px;
   text-align: center;
 }
 
-.promise-icon {
-  font-size: 32px;
-  margin-bottom: 8px;
-}
-
 .promise-label {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   color: #E24B4A;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   letter-spacing: 1px;
 }
 
 .promise-desc {
-  font-size: 11px;
+  font-size: 10px;
   color: #888780;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 /* 打开按钮 */
