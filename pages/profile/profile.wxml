@@ -101,53 +101,9 @@
       <view class="setting-label">📥 从剪贴板导入数据</view>
       <view class="setting-arrow">›</view>
     </view>
-  </view>
-
-  <!-- 小程序简介 -->
-  <view class="intro-section">
-    <view class="section-title">🀄 小程序简介</view>
-    <view class="intro-features">
-      <view class="intro-item">
-        <view class="intro-icon">⚡</view>
-        <view class="intro-text">
-          <view class="intro-title">多人实时记分</view>
-          <view class="intro-desc">支持 2-8 人同时记分，告别算账烦恼</view>
-        </view>
-      </view>
-      <view class="intro-item">
-        <view class="intro-icon">📊</view>
-        <view class="intro-text">
-          <view class="intro-title">战绩排行榜</view>
-          <view class="intro-desc">按月/季/年统计，看看谁是雀神</view>
-        </view>
-      </view>
-      <view class="intro-item">
-        <view class="intro-icon">📋</view>
-        <view class="intro-text">
-          <view class="intro-title">历史记录查询</view>
-          <view class="intro-desc">逐轮详情、胜负统计，一目了然</view>
-        </view>
-      </view>
-      <view class="intro-item">
-        <view class="intro-icon">🎲</view>
-        <view class="intro-text">
-          <view class="intro-title">趣味工具箱</view>
-          <view class="intro-desc">幸运大转盘、疯狂骰子，聚会必备</view>
-        </view>
-      </view>
-    </view>
-    <!-- 核心承诺 -->
-    <view class="intro-promises">
-      <view class="intro-promise-badge">
-        <view class="intro-promise-icon">💰</view>
-        <view class="intro-promise-label">永久免费</view>
-        <view class="intro-promise-desc">所有功能完全免费，无任何付费门槛</view>
-      </view>
-      <view class="intro-promise-badge">
-        <view class="intro-promise-icon">🚫</view>
-        <view class="intro-promise-label">零广告</view>
-        <view class="intro-promise-desc">干净清爽，专注记分体验</view>
-      </view>
+    <view class="setting-item" bindtap="onGoAbout">
+      <view class="setting-label">🀄 小程序简介</view>
+      <view class="setting-arrow">›</view>
     </view>
   </view>
 

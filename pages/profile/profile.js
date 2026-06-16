@@ -221,6 +221,13 @@ Page({
     })
   },
 
+  // 跳转到小程序简介（落地页）
+  onGoAbout() {
+    wx.navigateTo({
+      url: '/pages/share-page/share-page'
+    })
+  },
+
   // ========== 数据导出/导入 ==========
 
   // 导出数据到剪贴板
