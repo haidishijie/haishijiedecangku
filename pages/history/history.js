@@ -119,6 +119,32 @@ Page({
     })
   },
 
+  // 删除单条牌局记录
+  onDeleteGame(e) {
+    const gameId = e.currentTarget.dataset.id
+    wx.showModal({
+      title: '确认删除',
+      content: '删除后不可恢复，确定要删除这条牌局记录吗？',
+      confirmText: '删除',
+      confirmColor: '#E24B4A',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          // 从 globalData 中删除
+          const games = app.globalData.games
+          const index = games.findIndex(g => g.id === gameId)
+          if (index !== -1) {
+            games.splice(index, 1)
+            app.saveGames()
+          }
+          // 重新加载列表
+          this.loadGames()
+          wx.showToast({ title: '已删除', icon: 'none' })
+        }
+      }
+    })
+  },
+
   // 分享给朋友
   onShareAppMessage() {
     return {
@@ -131,6 +157,7 @@ Page({
   onShareTimeline() {
     return {
       title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page',
       query: ''
     }
   }

@@ -210,3 +210,16 @@
   color: #E24B4A;
   font-weight: 500;
 }
+
+.cf-delete {
+  font-size: 12px;
+  color: #888780;
+  padding: 4px 12px;
+  border-radius: 12px;
+  background: #F5F5F5;
+}
+
+.cf-delete:active {
+  background: #FFE4EC;
+  color: #E24B4A;
+}

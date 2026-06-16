@@ -61,6 +61,7 @@
       <view class="card-footer">
         <text class="cf-rounds">打了 {{item.roundCount}} 轮</text>
         <text class="cf-winner">🏆 {{item.winner}}</text>
+        <view class="cf-delete" catchtap="onDeleteGame" data-id="{{item.id}}">删除</view>
       </view>
     </view>
   </view>

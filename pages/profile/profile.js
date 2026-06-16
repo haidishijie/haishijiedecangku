@@ -477,6 +477,7 @@ Page({
   onShareTimeline() {
     return {
       title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page',
       query: ''
     }
   }
