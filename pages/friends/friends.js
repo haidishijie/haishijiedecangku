@@ -23,6 +23,12 @@ Page({
     const theme = themeUtil.getCurrentTheme()
     this.setData({ themeClass: theme.className })
     this.loadRankings()
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   // 切换时间范围
@@ -67,7 +73,19 @@ Page({
     const playerMap = {}
 
     filteredGames.forEach(game => {
-      game.finalScores?.forEach(score => {
+      if (!game.finalScores || game.finalScores.length === 0) return
+
+      // 找出本局赢家（总分最高的玩家）
+      var maxScore = -Infinity
+      var winnerId = null
+      game.finalScores.forEach(function(s) {
+        if (s.total > maxScore) {
+          maxScore = s.total
+          winnerId = s.playerId
+        }
+      })
+
+      game.finalScores.forEach(score => {
         if (!playerMap[score.playerId]) {
           playerMap[score.playerId] = {
             playerId: score.playerId,
@@ -80,7 +98,8 @@ Page({
 
         playerMap[score.playerId].totalGames++
         playerMap[score.playerId].totalScore += score.total
-        if (score.total > 0) {
+        // 只有本局总分最高的玩家才算赢
+        if (score.playerId === winnerId && maxScore > 0) {
           playerMap[score.playerId].wins++
         }
       })
@@ -97,7 +116,7 @@ Page({
     // 计算总统计
     let totalRounds = 0
     filteredGames.forEach(game => {
-      totalRounds += game.rounds?.length || 0
+      totalRounds += (game.rounds ? game.rounds.length : 0)
     })
 
     const totalPlayers = Object.keys(playerMap).length
@@ -128,6 +147,22 @@ Page({
         return '全部时间'
       default:
         return ''
+    }
+  },
+
+  // 分享给朋友
+  onShareAppMessage() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
     }
   }
 })

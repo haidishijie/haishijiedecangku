@@ -182,21 +182,34 @@ App({
     var currentStreak = 0
     var maxWinStreak = 0
     var totalScore = 0
+    var myId = currentUser.id
+    var myName = currentUser.name || ''
 
     for (var i = 0; i < endedGames.length; i++) {
       var game = endedGames[i]
       var myScore = null
+      var maxScore = -Infinity
+      var winnerId = null
+
       if (game.finalScores) {
+        // 找出本局赢家
         for (var j = 0; j < game.finalScores.length; j++) {
-          if (game.finalScores[j].playerId === currentUser.id) {
-            myScore = game.finalScores[j]
-            break
+          var s = game.finalScores[j]
+          if (s.total > maxScore) {
+            maxScore = s.total
+            winnerId = s.playerId
+          }
+          // 找自己的分数（ID 或名字匹配）
+          if (s.playerId === myId || (myName && s.playerName === myName)) {
+            myScore = s
           }
         }
       }
+
       if (myScore) {
         totalScore += myScore.total
-        if (myScore.total > 0) {
+        // 只有本局总分最高的玩家才算赢
+        if (myScore.playerId === winnerId && maxScore > 0) {
           wins++
           currentStreak++
           if (currentStreak > maxWinStreak) maxWinStreak = currentStreak

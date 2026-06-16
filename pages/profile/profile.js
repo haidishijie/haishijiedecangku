@@ -34,13 +34,19 @@ Page({
     // 加载主题设置
     this.loadTheme()
     this.loadProfile()
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   loadProfile() {
     const currentUser = app.globalData.currentUser
-    const userName = currentUser ? currentUser.name : ''
-    const avatarUrl = currentUser ? currentUser.avatar : ''
-    const userId = currentUser ? currentUser.id : ''
+    const userName = currentUser ? (currentUser.name || '') : ''
+    const avatarUrl = currentUser ? (currentUser.avatar || '') : ''
+    const userId = currentUser ? (currentUser.id || '') : ''
 
     // 加载战绩统计
     const stats = app.getStats()
@@ -101,32 +107,31 @@ Page({
     if (!currentUser) return []
 
     const opponentMap = {}
+    var myName = currentUser.name || ''
 
     games.forEach(game => {
-      const myScore = game.finalScores?.find(s => s.playerId === currentUser.id)
-      if (!myScore) return
+      if (!game.finalScores) return
 
       game.finalScores.forEach(score => {
+        // 跳过自己（ID 或名字匹配）
         if (score.playerId === currentUser.id) return
+        if (myName && score.playerName === myName) return
 
         if (!opponentMap[score.playerId]) {
           opponentMap[score.playerId] = {
             playerId: score.playerId,
             name: score.playerName,
             games: 0,
-            myTotal: 0,
-            theirTotal: 0
+            totalScore: 0
           }
         }
 
         opponentMap[score.playerId].games++
-        opponentMap[score.playerId].myTotal += myScore.total
-        opponentMap[score.playerId].theirTotal += score.total
+        opponentMap[score.playerId].totalScore += score.total
       })
     })
 
     return Object.values(opponentMap)
-      .map(o => ({ ...o, totalDiff: o.myTotal - o.theirTotal }))
       .sort((a, b) => b.games - a.games)
       .slice(0, 5)
   },
@@ -458,5 +463,21 @@ Page({
   _formatDate(d) {
     const pad = n => String(n).padStart(2, '0')
     return `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`
+  },
+
+  // 分享给朋友
+  onShareAppMessage() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })

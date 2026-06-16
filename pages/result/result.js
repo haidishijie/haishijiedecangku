@@ -13,7 +13,7 @@ Page({
     gameNotFound: false
   },
 
-  async onLoad(options) {
+  onLoad(options) {
     // 启用分享菜单（好友 + 朋友圈）
     wx.showShareMenu({
       withShareTicket: true,
@@ -34,14 +34,15 @@ Page({
       }
       this.processGameData(game)
     } else {
-      wx.showToast({ title: '参数错误', icon: 'none' })
+      // 没有 gameId 参数（从朋友圈分享打开）→ 显示分享落地页内容
+      this.setData({ showSharePage: true })
     }
   },
 
   // 处理牌局数据
   processGameData(game) {
-    const players = game.players
-    const rounds = game.rounds
+    var players = game.players || []
+    var rounds = game.rounds || []
 
     // 计算每个玩家的总分、胜负、庄数、自摸数
     const playerStats = players.map((p, index) => {
@@ -133,14 +134,14 @@ Page({
   // 分享战绩
   onShare() {
     wx.showActionSheet({
-      itemList: ['保存图片到相册', '分享给朋友', '分享到朋友圈'],
+      itemList: ['保存战绩图片', '分享给朋友', '分享到朋友圈'],
       success: (res) => {
         if (res.tapIndex === 0) {
           this.saveImage()
         } else if (res.tapIndex === 1) {
-          wx.showToast({ title: '战绩图已就绪，点击右上角「…」发给好友', icon: 'none', duration: 2000 })
+          wx.showToast({ title: '点击右上角「…」发给好友', icon: 'none', duration: 2000 })
         } else if (res.tapIndex === 2) {
-          wx.showToast({ title: '战绩图已就绪，点击右上角「…」分享到朋友圈', icon: 'none', duration: 2000 })
+          wx.showToast({ title: '点击右上角「…」分享到朋友圈', icon: 'none', duration: 2000 })
         }
       }
     })
@@ -335,9 +336,10 @@ Page({
             height: canvasH,
             destWidth: 750,
             destHeight: canvasH * 2,
+            fileType: 'png',
             success: (r) => resolve(r.tempFilePath),
             fail: reject
-          })
+          }, this)  // ★ 传入 this 确保 canvas 定位兼容性
         })
     })
   },
@@ -346,24 +348,80 @@ Page({
   async saveImage() {
     wx.showLoading({ title: '生成图片中...' })
     try {
+      // 先生成图片
       const tempPath = await this.renderResultImage()
 
-      await wx.saveImageToPhotosAlbum({ filePath: tempPath })
-      wx.hideLoading()
-      wx.showToast({ title: '已保存到相册', icon: 'none' })
-    } catch (err) {
-      wx.hideLoading()
-      if (err.errMsg && err.errMsg.includes('auth deny')) {
+      // 检查相册权限
+      const setting = await this._getSetting()
+      if (setting && setting.authSetting && setting.authSetting['scope.writePhotosAlbum'] === false) {
+        // 用户之前拒绝过授权
+        wx.hideLoading()
         wx.showModal({
           title: '需要授权',
-          content: '请允许保存图片到相册',
+          content: '保存图片到相册需要您的授权',
           confirmText: '去设置',
+          cancelText: '取消',
           success: (r) => { if (r.confirm) wx.openSetting() }
         })
-      } else {
-        wx.showToast({ title: '保存失败', icon: 'none' })
+        return
       }
+
+      // 尝试授权（首次会弹窗）
+      try {
+        await this._authorizeAlbum()
+      } catch (e) {
+        wx.hideLoading()
+        wx.showModal({
+          title: '授权失败',
+          content: '已拒绝相册权限，保存图片需要允许',
+          confirmText: '知道了',
+          showCancel: false
+        })
+        return
+      }
+
+      // 保存到相册（显式 Promise 包装，兼容所有 WeChat 版本）
+      await new Promise((resolve, reject) => {
+        wx.saveImageToPhotosAlbum({
+          filePath: tempPath,
+          success: resolve,
+          fail: reject
+        })
+      })
+
+      wx.hideLoading()
+      wx.showToast({ title: '已保存到相册 ✅', icon: 'none', duration: 2000 })
+    } catch (err) {
+      wx.hideLoading()
+      console.error('保存图片失败:', err.errMsg || err.message || err)
+      wx.showModal({
+        title: '保存失败',
+        content: '保存到相册失败，可尝试截图保存。\n错误: ' + (err.errMsg || err.message || '未知错误'),
+        showCancel: false,
+        confirmText: '知道了'
+      })
     }
+  },
+
+  // 获取用户设置
+  _getSetting() {
+    return new Promise((resolve) => {
+      wx.getSetting({
+        success: resolve,
+        fail: () => resolve(null)
+      })
+    })
+  },
+
+  // 授权相册权限
+  _authorizeAlbum() {
+    return new Promise((resolve, reject) => {
+      wx.authorize({
+        scope: 'scope.writePhotosAlbum',
+        success: resolve,
+        fail: reject
+      })
+    })
   },
 
   // 绘制圆角矩形
@@ -393,23 +451,17 @@ Page({
 
   // 分享给朋友
   onShareAppMessage() {
-    const { rankings, roundCount, playerCount, gameId } = this.data
-    const winner = rankings[0]
-
     return {
-      title: `🏆 ${winner?.playerName || '胡乐麻'}在${playerCount}人局中获胜！打了${roundCount}轮`,
-      path: `/pages/result/result?gameId=${gameId}`
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
     }
   },
 
   // 分享到朋友圈
   onShareTimeline() {
-    const { rankings, roundCount, playerCount, gameId } = this.data
-    const winner = rankings[0]
-
     return {
-      title: `${winner?.playerName || '胡乐麻'}在${playerCount}人局中获胜！打了${roundCount}轮 - 胡乐麻`,
-      query: `gameId=${gameId}`
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
     }
   }
 })

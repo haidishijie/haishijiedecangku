@@ -1,5 +1,57 @@
 <!-- 记分页 -->
-<view class="container">
+
+<!-- 分享落地页内容（从朋友圈打开时显示） -->
+<view wx:if="{{showSharePage}}" class="share-container">
+  <view class="share-hero">
+    <view class="share-hero-emoji">🀄</view>
+    <view class="share-hero-title">胡乐麻</view>
+    <view class="share-hero-subtitle">打牌记分小程序</view>
+  </view>
+
+  <view class="share-features">
+    <view class="share-feature-item">
+      <view class="share-feature-icon">⚡</view>
+      <view class="share-feature-text">
+        <view class="share-feature-title">多人实时记分</view>
+        <view class="share-feature-desc">支持 2-8 人同时记分，告别算账烦恼</view>
+      </view>
+    </view>
+    <view class="share-feature-item">
+      <view class="share-feature-icon">📊</view>
+      <view class="share-feature-text">
+        <view class="share-feature-title">战绩排行榜</view>
+        <view class="share-feature-desc">按月/季/年统计，看看谁是雀神</view>
+      </view>
+    </view>
+    <view class="share-feature-item">
+      <view class="share-feature-icon">📋</view>
+      <view class="share-feature-text">
+        <view class="share-feature-title">历史记录查询</view>
+        <view class="share-feature-desc">逐轮详情、胜负统计，一目了然</view>
+      </view>
+    </view>
+    <view class="share-feature-item">
+      <view class="share-feature-icon">🎲</view>
+      <view class="share-feature-text">
+        <view class="share-feature-title">趣味工具箱</view>
+        <view class="share-feature-desc">幸运大转盘、疯狂骰子，聚会必备</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="share-cta">
+    <button class="share-btn-open" bindtap="onGoHome">立即开局</button>
+  </view>
+
+  <view class="share-credit">
+    <view class="share-credit-divider"></view>
+    <view class="share-credit-text">本内容由 <text class="share-credit-bold">海鲜 Vibe Coding</text> 产出，借助 <text class="share-credit-bold">WorkBuddy</text> 平台协作完成</view>
+    <view class="share-credit-models">所使用模型包括：小米 MiMo V2.5 Pro、DeepSeek V4 Flash / Pro、GLM-5.1</view>
+  </view>
+</view>
+
+<!-- 正常记分内容 -->
+<view wx:else class="container">
   <!-- 顶部状态栏 -->
   <view class="game-header">
     <view class="round-info">🀄 第 {{currentRound}} 轮</view>

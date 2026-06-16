@@ -14,21 +14,53 @@ Page({
 
   onShow() {
     this.loadGames()
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   loadGames() {
     const allGames = app.getAllGames()
     const currentUser = app.globalData.currentUser
+    const myId = currentUser ? currentUser.id : ''
+    const myName = currentUser ? (currentUser.name || '') : ''
 
     let totalRounds = 0
     let totalScore = 0
+    let totalWins = 0
 
     const processedGames = allGames.map(game => {
-      totalRounds += game.rounds.length
+      var rounds = game.rounds || []
+      var players = game.players || []
+      totalRounds += rounds.length
 
-      const myScore = game.finalScores?.find(s => s.playerId === currentUser?.id)
-      const myTotal = myScore ? myScore.total : 0
+      // 找自己的分数（ID 或名字匹配）
+      var myScore = null
+      var maxScore = -Infinity
+      var winnerId = null
+
+      if (game.finalScores) {
+        for (var i = 0; i < game.finalScores.length; i++) {
+          var s = game.finalScores[i]
+          if (s.total > maxScore) {
+            maxScore = s.total
+            winnerId = s.playerId
+          }
+          if (s.playerId === myId || (myName && s.playerName === myName)) {
+            myScore = s
+          }
+        }
+      }
+
+      var myTotal = myScore ? myScore.total : 0
       totalScore += myTotal
+
+      // 判断当前用户是否是本局赢家
+      var isWin = myScore && myScore.playerId === winnerId && maxScore > 0
+      if (isWin) totalWins++
 
       // 排名（按分数高到低）
       const rankings = [...(game.finalScores || [])].sort((a, b) => b.total - a.total)
@@ -36,10 +68,11 @@ Page({
 
       return {
         id: game.id,
-        playerCount: game.players.length,
-        roundCount: game.rounds.length,
-        playerNames: game.players.map(p => p.name).join(' '),
+        playerCount: players.length,
+        roundCount: rounds.length,
+        playerNames: players.map(p => p.name).join(' '),
         myScore: myTotal,
+        isWin: isWin,
         rankings,
         winner,
         date: formatDate(game.endTime),
@@ -51,7 +84,8 @@ Page({
       allGames: processedGames,
       totalGames: processedGames.length,
       totalRounds,
-      totalScore
+      totalScore,
+      totalWins: totalWins
     })
 
     this.applyFilter()
@@ -69,9 +103,9 @@ Page({
     let filteredGames = allGames
 
     if (filter === 'win') {
-      filteredGames = allGames.filter(g => g.myScore > 0)
+      filteredGames = allGames.filter(g => g.isWin)
     } else if (filter === 'lose') {
-      filteredGames = allGames.filter(g => g.myScore < 0)
+      filteredGames = allGames.filter(g => !g.isWin)
     }
 
     this.setData({ filteredGames })
@@ -83,5 +117,21 @@ Page({
     wx.navigateTo({
       url: `/pages/result/result?gameId=${gameId}`
     })
+  },
+
+  // 分享给朋友
+  onShareAppMessage() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })

@@ -71,8 +71,8 @@
         <view class="opponent-name">{{item.name}}</view>
         <view class="opponent-stats">一起打了 {{item.games}} 局</view>
       </view>
-      <view class="opponent-score {{item.totalDiff > 0 ? 'positive' : item.totalDiff < 0 ? 'negative' : ''}}">
-        {{item.totalDiff > 0 ? '+' : ''}}{{item.totalDiff}}
+      <view class="opponent-score {{item.totalScore > 0 ? 'positive' : item.totalScore < 0 ? 'negative' : ''}}">
+        {{item.totalScore > 0 ? '+' : ''}}{{item.totalScore}}
       </view>
     </view>
   </view>

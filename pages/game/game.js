@@ -34,7 +34,8 @@ Page({
       wx.setStorageSync('activeGameId', options.gameId)
       this.initLocalMode(options)
     } else {
-      wx.showToast({ title: '参数错误', icon: 'none' })
+      // 没有 gameId 参数（从朋友圈分享打开）→ 显示分享落地页内容
+      this.setData({ showSharePage: true })
     }
   },
 
@@ -64,7 +65,7 @@ Page({
 
   // 页面恢复时还原当前轮次
   onShow() {
-    const { gameId } = this.data
+    var gameId = this.data.gameId
     if (!gameId) return
 
     // 非首次加载（onLoad 已初始化）
@@ -74,13 +75,13 @@ Page({
     }
 
     // 从后台恢复：读取暂存数据
-    const game = app.globalData.games.find(g => g.id === gameId)
+    var game = app.globalData.games.find(function(g) { return g.id === gameId })
     if (game && game._pendingRound) {
-      const { currentRound, currentRoundScores, players } = game._pendingRound
+      var pending = game._pendingRound
       this.setData({
-        currentRound,
-        currentRoundScores,
-        players
+        currentRound: pending.currentRound,
+        currentRoundScores: pending.currentRoundScores,
+        players: pending.players
       })
     }
   },
@@ -88,20 +89,24 @@ Page({
   // ========== 初始化 ==========
 
   initLocalMode(options) {
-    const gameId = options.gameId
-    const game = app.globalData.games.find(g => g.id === gameId)
+    var gameId = options.gameId
+    var game = app.globalData.games.find(function(g) { return g.id === gameId })
     if (!game) {
       wx.showToast({ title: '牌局不存在', icon: 'none' })
       return
     }
 
-    // 检查是否有未保存的轮次（上次异常退出时的暂存数据）
-    const pending = game._pendingRound
-    const hasPending = pending && pending.currentRoundScores && pending.currentRoundScores.length > 0
+    // 确保 rounds 和 players 存在
+    if (!game.rounds) game.rounds = []
+    if (!game.players) game.players = []
 
-    let players
-    let currentRound
-    let currentRoundScores
+    // 检查是否有未保存的轮次（上次异常退出时的暂存数据）
+    var pending = game._pendingRound
+    var hasPending = pending && pending.currentRoundScores && pending.currentRoundScores.length > 0
+
+    var players
+    var currentRound
+    var currentRoundScores
 
     if (hasPending) {
       // 恢复暂存数据（包括本轮未确认的记分和玩家总分）
@@ -115,13 +120,15 @@ Page({
       wx.showToast({ title: '已恢复上次记分 📝', icon: 'none', duration: 2000 })
     } else {
       // 正常初始化：从已保存轮次恢复
-      players = game.players.map(p => ({
-        id: p.id,
-        name: p.name,
-        total: p.total || 0,
-        lastRound: p.lastRound || 0,
-        roundPending: 0
-      }))
+      players = game.players.map(function(p) {
+        return {
+          id: p.id,
+          name: p.name,
+          total: p.total || 0,
+          lastRound: p.lastRound || 0,
+          roundPending: 0
+        }
+      })
       currentRound = game.rounds.length + 1
       currentRoundScores = []
 
@@ -135,19 +142,22 @@ Page({
     delete game._prompted
 
     // 获取最近4轮历史
-    const roundHistory = game.rounds.slice(-4).reverse().map(round => ({
-      roundNumber: round.roundNumber,
-      scores: round.scores
-    }))
+    var rounds = game.rounds || []
+    var roundHistory = rounds.slice(-4).reverse().map(function(round) {
+      return {
+        roundNumber: round.roundNumber,
+        scores: round.scores
+      }
+    })
 
     this.setData({
-      gameId,
-      players,
-      playerNamesStr: players.map(p => p.name).join(' '),
-      currentRound,
-      currentRoundScores,
+      gameId: gameId,
+      players: players,
+      playerNamesStr: players.map(function(p) { return p.name }).join(' '),
+      currentRound: currentRound,
+      currentRoundScores: currentRoundScores,
       selectedIndex: -1,
-      roundHistory
+      roundHistory: roundHistory
     })
 
     // 初始化后保存状态
@@ -509,17 +519,27 @@ Page({
     })
   },
 
+  // 回到首页
+  onGoHome() {
+    wx.navigateBack({
+      delta: 10,
+      fail: () => {
+        wx.redirectTo({ url: '/pages/index/index' })
+      }
+    })
+  },
+
   onShareAppMessage() {
     return {
-      title: '胡乐 - 打牌记分',
-      path: '/pages/index/index'
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
     }
   },
 
   // 分享到朋友圈
   onShareTimeline() {
     return {
-      title: '胡乐麻 - 打牌记分小程序',
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
       query: ''
     }
   }

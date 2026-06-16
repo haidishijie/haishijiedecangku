@@ -22,6 +22,12 @@ Page({
     this.loadHistory()
     // 投一次欢迎骰子
     this._rollOnce(false)
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   // ★ 页面退出时清理动画定时器
@@ -217,5 +223,21 @@ Page({
 
   onCloseResult: function() {
     this.setData({ showResult: false })
+  },
+
+  // 分享给朋友
+  onShareAppMessage: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })

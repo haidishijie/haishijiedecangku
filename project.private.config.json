@@ -1,7 +1,19 @@
 {
   "libVersion": "3.16.1",
   "projectname": "hule-miniprogram",
-  "condition": {},
+  "condition": {
+    "miniprogram": {
+      "list": [
+        {
+          "name": "pages/share-page/share-page",
+          "pathName": "pages/share-page/share-page",
+          "query": "",
+          "scene": null,
+          "launchMode": "default"
+        }
+      ]
+    }
+  },
   "setting": {
     "urlCheck": true,
     "coverView": true,

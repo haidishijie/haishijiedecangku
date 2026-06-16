@@ -1,0 +1,59 @@
+<!-- 分享落地页 -->
+<view class="container">
+  <!-- 头部 -->
+  <view class="hero">
+    <view class="hero-emoji">🀄</view>
+    <view class="hero-title">胡乐麻</view>
+    <view class="hero-subtitle">打牌记分小程序</view>
+  </view>
+
+  <!-- 功能亮点 -->
+  <view class="features">
+    <view class="feature-item">
+      <view class="feature-icon">⚡</view>
+      <view class="feature-text">
+        <view class="feature-title">多人实时记分</view>
+        <view class="feature-desc">支持 2-8 人同时记分，告别算账烦恼</view>
+      </view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">📊</view>
+      <view class="feature-text">
+        <view class="feature-title">战绩排行榜</view>
+        <view class="feature-desc">按月/季/年统计，看看谁是雀神</view>
+      </view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">📋</view>
+      <view class="feature-text">
+        <view class="feature-title">历史记录查询</view>
+        <view class="feature-desc">逐轮详情、胜负统计，一目了然</view>
+      </view>
+    </view>
+    <view class="feature-item">
+      <view class="feature-icon">🎲</view>
+      <view class="feature-text">
+        <view class="feature-title">趣味工具箱</view>
+        <view class="feature-desc">幸运大转盘、疯狂骰子，聚会必备</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 打开按钮 -->
+  <view class="cta-section">
+    <button class="btn-open" bindtap="onGoHome">
+      立即开局
+    </button>
+  </view>
+
+  <!-- 落款 -->
+  <view class="credit-section">
+    <view class="credit-divider"></view>
+    <view class="credit-text">
+      本内容由 <text class="credit-bold">海鲜 Vibe Coding</text> 产出，借助 <text class="credit-bold">WorkBuddy</text> 平台协作完成
+    </view>
+    <view class="credit-models">
+      所使用模型包括：小米 MiMo V2.5 Pro、DeepSeek V4 Flash / Pro、GLM-5.1
+    </view>
+  </view>
+</view>

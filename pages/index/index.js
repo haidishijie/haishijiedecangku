@@ -17,6 +17,12 @@ Page({
     var theme = themeUtil.getCurrentTheme()
     this.setData({ themeClass: theme.className })
     this.loadData()
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   loadData: function() {
@@ -25,9 +31,12 @@ Page({
       var currentUser = app.globalData.currentUser
       var myScore = null
       if (game.finalScores && currentUser) {
+        var myId = currentUser.id
+        var myName = currentUser.name || ''
         for (var i = 0; i < game.finalScores.length; i++) {
-          if (game.finalScores[i].playerId === currentUser.id) {
-            myScore = game.finalScores[i]
+          var s = game.finalScores[i]
+          if (s.playerId === myId || (myName && s.playerName === myName)) {
+            myScore = s
             break
           }
         }
@@ -66,5 +75,21 @@ Page({
 
   onGoDice: function() {
     wx.navigateTo({ url: '/pages/dice/dice' })
+  },
+
+  // 分享给朋友
+  onShareAppMessage: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })

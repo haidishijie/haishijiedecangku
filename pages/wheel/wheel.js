@@ -31,6 +31,12 @@ Page({
     this.loadHistory()
     this.ctx = null
     this.animationTimer = null
+
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
   },
 
   onReady() {
@@ -335,5 +341,21 @@ Page({
     const prizes = [...this.data.prizes, this._createPrize(name)]
     this.setData({ prizes, prizeColor: prizes[0].color, prizeBgColor: prizes[0].prizeBg })
     this.drawWheel()
+  },
+
+  // 分享给朋友
+  onShareAppMessage() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })

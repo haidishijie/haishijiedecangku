@@ -14,6 +14,12 @@ Page({
   },
 
   onLoad: function(options) {
+    // 启用分享菜单（好友 + 朋友圈）
+    wx.showShareMenu({
+      withShareTicket: true,
+      menus: ['shareAppMessage', 'shareTimeline']
+    })
+
     // ★ 这里才是检查未完成牌局的正确位置
     // 用户在 index 点"快速开局"直接跳过来，我们在这拦截
     var unfinished = app.getUnfinishedGame()
@@ -179,5 +185,21 @@ Page({
     }
 
     wx.redirectTo({ url: '/pages/game/game?gameId=' + game.id })
+  },
+
+  // 分享给朋友
+  onShareAppMessage: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      path: '/pages/share-page/share-page'
+    }
+  },
+
+  // 分享到朋友圈
+  onShareTimeline: function() {
+    return {
+      title: '我在用胡乐麻记分，打牌再也不怕算错账了！',
+      query: ''
+    }
   }
 })
