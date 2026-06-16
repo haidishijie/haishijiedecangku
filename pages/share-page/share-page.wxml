@@ -5,6 +5,12 @@
     <view class="hero-emoji">🀄</view>
     <view class="hero-title">胡乐麻</view>
     <view class="hero-subtitle">打牌记分小程序</view>
+    <view class="hero-credit">
+      本内容由 <text class="hero-credit-bold">海鲜 Vibe Coding</text> 产出，借助 <text class="hero-credit-bold">WorkBuddy</text> 平台协作完成
+    </view>
+    <view class="hero-credit-models">
+      所使用模型包括：小米 MiMo V2.5 Pro、DeepSeek V4 Flash / Pro、GLM-5.1
+    </view>
   </view>
 
   <!-- 功能亮点 -->
@@ -56,16 +62,5 @@
     <button class="btn-open" bindtap="onGoHome">
       立即开局
     </button>
-  </view>
-
-  <!-- 落款 -->
-  <view class="credit-section">
-    <view class="credit-divider"></view>
-    <view class="credit-text">
-      本内容由 <text class="credit-bold">海鲜 Vibe Coding</text> 产出，借助 <text class="credit-bold">WorkBuddy</text> 平台协作完成
-    </view>
-    <view class="credit-models">
-      所使用模型包括：小米 MiMo V2.5 Pro、DeepSeek V4 Flash / Pro、GLM-5.1
-    </view>
   </view>
 </view>

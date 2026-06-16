@@ -34,6 +34,25 @@
   font-weight: 500;
 }
 
+.hero-credit {
+  font-size: 11px;
+  color: #AAA;
+  line-height: 1.8;
+  margin-top: 16px;
+}
+
+.hero-credit-bold {
+  font-weight: 600;
+  color: #888;
+}
+
+.hero-credit-models {
+  font-size: 10px;
+  color: #CCC;
+  line-height: 1.6;
+  margin-top: 4px;
+}
+
 /* 功能亮点 */
 .features {
   width: 100%;
@@ -131,38 +150,4 @@
 
 .btn-open::after {
   display: none;
-}
-
-/* 落款 */
-.credit-section {
-  width: 100%;
-  max-width: 360px;
-  text-align: center;
-  padding-top: 8px;
-}
-
-.credit-divider {
-  width: 60px;
-  height: 2px;
-  background: #E0E0E0;
-  margin: 0 auto 16px;
-  border-radius: 1px;
-}
-
-.credit-text {
-  font-size: 11px;
-  color: #AAA;
-  line-height: 1.8;
-  margin-bottom: 6px;
-}
-
-.credit-bold {
-  font-weight: 600;
-  color: #888;
-}
-
-.credit-models {
-  font-size: 10px;
-  color: #CCC;
-  line-height: 1.6;
 }
