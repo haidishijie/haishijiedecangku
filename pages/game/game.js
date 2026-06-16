@@ -30,6 +30,13 @@ Page({
     wx.enableAlertBeforeUnload()
 
     if (options.gameId) {
+      // 检查牌局是否存在
+      var game = app.globalData.games.find(function(g) { return g.id === options.gameId })
+      if (!game) {
+        // 牌局不存在（从其他设备分享过来）→ 显示分享落地页内容
+        this.setData({ showSharePage: true })
+        return
+      }
       // 标记当前活跃牌局（冷启动恢复用）
       wx.setStorageSync('activeGameId', options.gameId)
       this.initLocalMode(options)

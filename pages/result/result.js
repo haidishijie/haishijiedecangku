@@ -24,12 +24,8 @@ Page({
       this.setData({ gameId: options.gameId })
       const game = app.globalData.games.find(g => g.id === options.gameId)
       if (!game) {
-        // 数据不在本地（分享到其他设备无法加载）
-        // 展示友好提示页而非空白页
-        this.setData({
-          gameNotFound: true
-        })
-        wx.showToast({ title: '本局数据仅限原设备查看', icon: 'none', duration: 2000 })
+        // 数据不在本地（分享到其他设备）→ 显示分享落地页内容
+        this.setData({ showSharePage: true })
         return
       }
       this.processGameData(game)
